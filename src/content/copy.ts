@@ -33,6 +33,7 @@ export const copy = {
     proof: {
       eyebrow: "BASE DE TRABALHO",
       title: "Uma visão que une operação, produto e execução.",
+      intro: "Passe pelos pontos para conhecer a base por trás de cada entrega.",
       items: [
         {
           k: "AURHEA",
@@ -89,6 +90,7 @@ export const copy = {
       view: "VER PROJETO",
       role: "Escopo",
       project: "Projeto",
+      categories: "Tecnologias e disciplinas",
       previous: "Projeto anterior",
       next: "Próximo projeto",
     },
@@ -246,6 +248,7 @@ export const copy = {
     proof: {
       eyebrow: "WORKING FOUNDATION",
       title: "A view that connects operations, product and execution.",
+      intro: "Explore the foundations behind the way each project is delivered.",
       items: [
         {
           k: "AURHEA",
@@ -302,6 +305,7 @@ export const copy = {
       view: "VIEW PROJECT",
       role: "Scope",
       project: "Project",
+      categories: "Technologies and disciplines",
       previous: "Previous project",
       next: "Next project",
     },

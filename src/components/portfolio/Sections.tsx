@@ -5,6 +5,7 @@ import { projects } from "@/content/projects";
 import { links } from "@/lib/links";
 import { ArrowLink, Container } from "./primitives";
 import { CinematicCase } from "./CinematicCase";
+import { ProjectScreen } from "./ProjectScreen";
 import { Reveal } from "./Reveal";
 import { ScrollDrift } from "./ScrollDrift";
 
@@ -72,24 +73,29 @@ export function Proof({ t }: { t: Copy }) {
             {t.proof.title}
           </h2>
           <p className="text-sm leading-relaxed text-muted-foreground lg:col-span-4">
-            Passe pelos pontos para conhecer a base por trás de cada entrega.
+            {t.proof.intro}
           </p>
         </div>
 
         <div className="proof-deck mt-14 grid overflow-hidden lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="relative min-h-[22rem] p-7 sm:p-10 lg:min-h-[27rem] lg:p-14">
+          <div className="proof-content">
             <p className="meta text-primary">{item.k}</p>
-            <Reveal key={item.k} className="mt-10 max-w-xl">
+            <div key={item.k} className="proof-slide max-w-xl" aria-live="polite">
               <p className="display text-5xl leading-[0.9] text-foreground sm:text-6xl">{item.v}</p>
               <p className="mt-7 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
                 {item.d}
               </p>
-            </Reveal>
-            <div className="absolute inset-x-7 bottom-7 flex items-center justify-between sm:inset-x-10 sm:bottom-10 lg:inset-x-14 lg:bottom-14">
-              <span className="meta text-white/35">
-                0{active + 1} / 0{t.proof.items.length}
-              </span>
-              <div className="flex gap-2">
+            </div>
+            <div className="proof-footer">
+              <div className="proof-count-wrap">
+                <span className="meta text-white/35">
+                  0{active + 1} / 0{t.proof.items.length}
+                </span>
+                <span className="proof-progress" aria-hidden="true">
+                  <span style={{ transform: `scaleX(${(active + 1) / t.proof.items.length})` }} />
+                </span>
+              </div>
+              <div className="proof-nav">
                 <button
                   type="button"
                   onClick={() => show(-1)}
@@ -109,7 +115,7 @@ export function Proof({ t }: { t: Copy }) {
               </div>
             </div>
           </div>
-          <div className="grid bg-white/[0.04] p-3 sm:grid-cols-2 lg:grid-cols-1 lg:p-5">
+          <div className="proof-picker-rail">
             {t.proof.items.map((proof, index) => (
               <button
                 key={proof.k}
@@ -134,7 +140,10 @@ export function Proof({ t }: { t: Copy }) {
 
 export function Systems({ t }: { t: Copy }) {
   return (
-    <section id="systems" className="case-chapter bg-[#0b0d11] py-24 sm:py-32 lg:py-40">
+    <section
+      id="systems"
+      className="case-chapter overflow-hidden bg-[#0b0d11] py-24 sm:py-32 lg:py-40"
+    >
       <Container>
         <Eyebrow>{t.systems.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-10 lg:grid-cols-12">
@@ -226,20 +235,17 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
         </div>
 
         <div className="project-stage mt-14 grid gap-7 p-3 sm:p-5 lg:grid-cols-12 lg:gap-10 lg:p-7">
-          <ScrollDrift
-            className="relative min-h-[19rem] overflow-hidden rounded-[1rem] bg-[#0a0d14] lg:col-span-8 lg:min-h-[33rem]"
-            speed={0.045}
-          >
+          <ProjectScreen className="lg:col-span-8" motionKey={project.id}>
             <img
               key={project.id}
               src={project.image}
               alt={`Prévia do projeto ${project.title}`}
               loading={activeIndex === initialProject ? "eager" : "lazy"}
               decoding="async"
-              className="project-stage-image h-full w-full object-contain"
+              className="project-screen-media project-stage-image h-full w-full object-contain"
             />
             <span className="project-stage-index">{project.index}</span>
-          </ScrollDrift>
+          </ProjectScreen>
           <div className="flex min-h-[19rem] flex-col justify-between p-3 sm:p-5 lg:col-span-4 lg:min-h-[33rem] lg:p-6">
             <div>
               <p className="meta text-primary">
@@ -251,6 +257,11 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
               <p className="mt-6 text-base leading-relaxed text-muted-foreground">
                 {project.description[lang]}
               </p>
+              <ul className="project-categories" aria-label={t.work.categories}>
+                {project.categories.map((category) => (
+                  <li key={category}>{category}</li>
+                ))}
+              </ul>
               <div className="mt-7">
                 <p className="meta text-white/40">{t.work.role}</p>
                 <p className="mt-2 text-sm text-white/78">{project.role.join(" · ")}</p>

@@ -99,6 +99,9 @@
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
   --font-editorial: "Instrument Serif", Georgia, serif;
   --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --duration-ui: 200ms;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -300,22 +303,77 @@
     justify-content: space-between;
   }
 
-  .hero-sheen {
+  .hero-stage {
+    background: #05070a;
+    min-height: 100svh;
+  }
+
+  .hero-media-shell {
+    inset: 0;
+    overflow: hidden;
+    position: absolute;
+  }
+
+  .hero-media-depth {
+    inset: -2%;
+    position: absolute;
+    transform-origin: center;
+  }
+
+  .hero-media {
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% center;
+    width: 100%;
+  }
+
+  .hero-media-vignette {
     background:
-      radial-gradient(
-        circle at 68% 36%,
-        color-mix(in oklab, var(--primary) 13%, transparent),
-        transparent 26%
-      ),
       linear-gradient(
-        112deg,
-        transparent 10%,
-        color-mix(in oklab, white 4%, transparent) 48%,
-        transparent 72%
-      );
+        90deg,
+        rgba(3, 5, 8, 0.98) 0%,
+        rgba(3, 5, 8, 0.79) 34%,
+        rgba(3, 5, 8, 0.2) 62%,
+        rgba(3, 5, 8, 0.28) 100%
+      ),
+      linear-gradient(0deg, rgba(3, 5, 8, 0.77) 0%, transparent 47%);
     inset: 0;
     pointer-events: none;
     position: absolute;
+    z-index: 1;
+  }
+
+  .hero-curtain {
+    background: #05070a;
+    bottom: 4%;
+    position: absolute;
+    top: 4%;
+    width: clamp(1.25rem, 4.25vw, 4.5rem);
+    z-index: 2;
+  }
+
+  .hero-curtain-left {
+    left: 0;
+    transform-origin: left center;
+  }
+
+  .hero-curtain-right {
+    right: 0;
+    transform-origin: right center;
+  }
+
+  .hero-frame {
+    border: 1px solid color-mix(in oklab, white 13%, transparent);
+    border-radius: clamp(0.85rem, 1.7vw, 1.4rem);
+    inset: clamp(1rem, 2.8vw, 2.75rem);
+    pointer-events: none;
+    position: absolute;
+    z-index: 3;
+  }
+
+  .hero-heading {
+    position: relative;
+    z-index: 4;
   }
 
   .hero-name {
@@ -326,52 +384,26 @@
   .hero-name-first {
     color: white;
     font-family: var(--font-display);
-    font-size: clamp(5.7rem, 18.8vw, 14.5rem);
+    font-size: clamp(5.6rem, 14vw, 12.5rem);
     font-weight: 700;
     letter-spacing: -0.045em;
-    line-height: 0.72;
+    line-height: 0.75;
   }
 
   .hero-name-last {
     color: var(--primary);
     font-family: var(--font-editorial);
-    font-size: clamp(4.5rem, 16.7vw, 12rem);
+    font-size: clamp(4.4rem, 11.8vw, 10rem);
     font-style: italic;
     font-weight: 400;
     letter-spacing: -0.09em;
-    line-height: 0.72;
-    margin-bottom: 0.4em;
+    line-height: 0.74;
     margin-left: 0.08em;
     margin-top: 0.24em;
   }
 
-  .hero-portrait-wrap {
-    mask-image: linear-gradient(90deg, transparent 0%, black 20%, black 100%);
-    perspective: 1100px;
-    transform-origin: 50% 100%;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 20%, black 100%);
-  }
-
-  .hero-portrait-wrap::after {
-    background:
-      linear-gradient(to top, #08090b 0%, transparent 22%),
-      linear-gradient(90deg, #08090b 0%, transparent 27%);
-    content: "";
-    inset: 0;
-    pointer-events: none;
-    position: absolute;
-  }
-
-  .hero-portrait-depth {
-    transform-style: preserve-3d;
-  }
-
-  .hero-portrait {
-    transform-origin: 52% 60%;
-  }
-
   .hero-copy-panel {
-    background: color-mix(in oklab, #08090b 63%, transparent);
+    background: color-mix(in oklab, #080b10 69%, transparent);
     border: 1px solid color-mix(in oklab, white 14%, transparent);
     border-radius: 1.1rem;
     padding: 1.1rem;
@@ -402,14 +434,10 @@
     min-height: 3.1rem;
     padding-inline: 1.2rem;
     transition:
-      background-color 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
-      border-color 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
-      box-shadow 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
-      transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .hero-action:hover {
-    transform: translateY(-0.2rem) scale(1.02);
+      background-color var(--duration-ui) var(--ease-out),
+      border-color var(--duration-ui) var(--ease-out),
+      box-shadow var(--duration-ui) var(--ease-out),
+      transform var(--duration-ui) var(--ease-out);
   }
 
   .hero-action-primary {
@@ -437,6 +465,10 @@
     background: color-mix(in oklab, white 15%, transparent);
     border-color: color-mix(in oklab, var(--primary) 65%, white 15%);
     color: white;
+  }
+
+  .hero-action:active {
+    transform: scale(0.97);
   }
 
   .hero-scroll-cue {
@@ -470,30 +502,6 @@
     content: "";
     inset: -0.33rem;
     position: absolute;
-  }
-
-  .hero-orbit {
-    border: 1px solid color-mix(in oklab, var(--primary) 22%, transparent);
-    border-radius: 999px;
-    pointer-events: none;
-    position: absolute;
-  }
-
-  .hero-orbit-one {
-    height: 28rem;
-    right: -13rem;
-    top: 11rem;
-    transform: rotate(-24deg);
-    width: 28rem;
-  }
-
-  .hero-orbit-two {
-    bottom: -15rem;
-    height: 31rem;
-    left: -19rem;
-    opacity: 0.42;
-    transform: rotate(29deg);
-    width: 36rem;
   }
 
   .manifesto-shape {
@@ -532,26 +540,90 @@
     border-radius: 1.35rem;
   }
 
+  .proof-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 25rem;
+    padding: 1.75rem;
+  }
+
+  .proof-slide {
+    animation: proof-enter 480ms var(--ease-out) both;
+    margin-top: 2.5rem;
+  }
+
+  .proof-footer {
+    align-items: flex-end;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 3rem;
+  }
+
+  .proof-count-wrap {
+    display: grid;
+    flex: 1;
+    gap: 0.75rem;
+    max-width: 13rem;
+  }
+
+  .proof-progress {
+    background: color-mix(in oklab, white 10%, transparent);
+    display: block;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .proof-progress > span {
+    background: var(--primary);
+    display: block;
+    height: 100%;
+    transform-origin: left center;
+    transition: transform 320ms var(--ease-out);
+    width: 100%;
+  }
+
+  .proof-nav {
+    display: flex;
+    flex: none;
+    gap: 0.5rem;
+  }
+
+  .proof-picker-rail {
+    background: color-mix(in oklab, white 4%, transparent);
+    display: grid;
+    gap: 0.65rem;
+    grid-auto-columns: minmax(14.5rem, 78vw);
+    grid-auto-flow: column;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding: 0.75rem;
+    scroll-snap-type: inline mandatory;
+    scrollbar-color: color-mix(in oklab, var(--primary) 46%, transparent) transparent;
+  }
+
   .circle-control {
     align-items: center;
     border: 1px solid color-mix(in oklab, white 18%, transparent);
     border-radius: 999px;
     color: var(--foreground);
     display: inline-flex;
-    height: 2.75rem;
+    height: 3rem;
     justify-content: center;
     transition:
-      background-color 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
-      border-color 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
-      transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
-    width: 2.75rem;
+      background-color var(--duration-ui) var(--ease-out),
+      border-color var(--duration-ui) var(--ease-out),
+      color var(--duration-ui) var(--ease-out),
+      transform var(--duration-ui) var(--ease-out);
+    width: 3rem;
   }
 
-  .circle-control:hover {
+  .circle-control:active {
     background-color: var(--primary);
     border-color: var(--primary);
     color: var(--primary-foreground);
-    transform: translateY(-2px);
+    transform: scale(0.96);
   }
 
   .proof-picker {
@@ -560,19 +632,15 @@
     flex-direction: column;
     min-height: 9.25rem;
     padding: 1.4rem;
+    scroll-snap-align: start;
     text-align: left;
     transition:
       background-color 260ms cubic-bezier(0.16, 1, 0.3, 1),
       transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .proof-picker:hover,
   .proof-picker.is-active {
     background: color-mix(in oklab, var(--primary) 12%, transparent);
-  }
-
-  .proof-picker:hover {
-    transform: translateX(0.35rem);
   }
 
   .case-preview {
@@ -678,8 +746,34 @@
     border-radius: 1.45rem;
   }
 
+  .project-screen-root {
+    min-height: 19rem;
+    perspective: 1300px;
+  }
+
+  .project-screen-plate {
+    background:
+      radial-gradient(
+        circle at 82% 14%,
+        color-mix(in oklab, var(--primary) 8%, transparent),
+        transparent 36%
+      ),
+      #0a0d14;
+    border: 1px solid color-mix(in oklab, white 9%, transparent);
+    border-radius: 1rem;
+    height: 100%;
+    min-height: inherit;
+    overflow: hidden;
+    position: relative;
+    transform-style: preserve-3d;
+  }
+
+  .project-screen-media {
+    transform: translateZ(14px);
+  }
+
   .project-stage-image {
-    animation: project-enter 530ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: project-enter 560ms var(--ease-out) both;
   }
 
   .project-stage-index {
@@ -690,6 +784,25 @@
     font-style: italic;
     left: 1rem;
     position: absolute;
+    transform: translateZ(24px);
+  }
+
+  .project-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 1.35rem;
+  }
+
+  .project-categories li {
+    border: 1px solid color-mix(in oklab, white 13%, transparent);
+    border-radius: 999px;
+    color: color-mix(in oklab, white 62%, transparent);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 0.45rem 0.7rem;
+    text-transform: uppercase;
   }
 
   .project-rail {
@@ -1005,25 +1118,110 @@
   }
 }
 
-@media (max-width: 1023px) {
-  .hero-portrait-wrap {
-    left: 26%;
-    width: 90%;
+@keyframes proof-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (min-width: 640px) {
+  .proof-content {
+    min-height: 27rem;
+    padding: 2.5rem;
+  }
+
+  .proof-picker-rail {
+    grid-auto-flow: initial;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-media {
+    object-position: 78% center;
+  }
+
+  .project-screen-root {
+    min-height: 28rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-media {
+    object-position: 50% center;
+  }
+
+  .proof-content {
+    min-height: 27rem;
+    padding: 3.5rem;
+  }
+
+  .proof-picker-rail {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+
+  .project-screen-root {
+    min-height: 33rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-action:hover {
+    transform: translateY(-0.2rem) scale(1.02);
+  }
+
+  .circle-control:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+    transform: translateY(-2px);
+  }
+
+  .proof-picker:hover {
+    background: color-mix(in oklab, var(--primary) 8%, transparent);
+    transform: translateX(0.35rem);
   }
 }
 
 @media (max-width: 639px) {
+  .hero-media {
+    object-position: 72% center;
+  }
+
+  .hero-media-vignette {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(3, 5, 8, 0.95) 0%,
+        rgba(3, 5, 8, 0.73) 46%,
+        rgba(3, 5, 8, 0.34) 100%
+      ),
+      linear-gradient(0deg, rgba(3, 5, 8, 0.92) 0%, rgba(3, 5, 8, 0.08) 62%);
+  }
+
+  .hero-curtain,
+  .hero-frame {
+    display: none;
+  }
+
   .hero-name-first {
-    font-size: clamp(5.7rem, 23.4vw, 8.5rem);
+    font-size: clamp(5.15rem, 22.8vw, 8.2rem);
   }
 
   .hero-name-last {
-    font-size: clamp(4.5rem, 20.1vw, 7.6rem);
-    margin-bottom: 0.25em;
+    font-size: clamp(4.1rem, 19.5vw, 7.15rem);
   }
 
   .hero-copy-panel {
-    background: color-mix(in oklab, #08090b 74%, transparent);
+    background: color-mix(in oklab, #08090b 82%, transparent);
     padding: 0.9rem;
   }
 
@@ -1070,6 +1268,13 @@
   }
 
   .scroll-drift {
+    transform: none !important;
+  }
+
+  .hero-media-depth,
+  .project-screen-plate,
+  .project-screen-media {
+    opacity: 1 !important;
     transform: none !important;
   }
 }
