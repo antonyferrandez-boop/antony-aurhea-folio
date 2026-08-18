@@ -13,9 +13,8 @@ export type Project = {
   role: string[];
   description: { pt: string; en: string };
   liveUrl?: string;
-  image?: string;
+  image: string;
   status?: { pt: string; en: string };
-  featured?: boolean;
 };
 
 export const projects: Project[] = [
@@ -24,36 +23,36 @@ export const projects: Project[] = [
     index: "001",
     title: "AURHEA",
     year: 2026,
-    categories: ["TECHNOLOGY COMPANY", "SYSTEMS", "AUTOMATION"],
-    role: ["FOUNDER", "DEVELOPER"],
+    categories: ["Marca", "Produto digital", "Sistemas"],
+    role: ["Direção", "Design", "Desenvolvimento"],
     description: {
       pt: "Empresa de tecnologia criada para desenvolver produtos digitais, sistemas, automações e soluções aplicadas a negócios reais.",
       en: "Technology company built to develop digital products, systems, automation and solutions applied to real businesses.",
     },
     liveUrl: "https://www.aurheatec.com.br/",
     image: aurheaShot.url,
-    featured: true,
   },
   {
     id: "porco-morto",
     index: "002",
     title: "PORCO MORTO",
     year: 2026,
-    categories: ["RESTAURANT OPERATIONS SYSTEM", "FULL STACK"],
-    role: ["PRODUCT", "DESIGN", "DEVELOPMENT"],
+    categories: ["Restaurante", "Jornada de pedido", "Operação"],
+    role: ["Produto", "Design", "Desenvolvimento"],
     description: {
       pt: "Sistema completo de operação para restaurante: pedidos, administração, fluxo financeiro e operação em tempo real sobre um backend autoritativo.",
       en: "End-to-end restaurant operations system: orders, administration, financial flow and realtime operation on top of an authoritative backend.",
     },
-    featured: true,
+    liveUrl: "https://porcomorto.lovable.app/",
+    image: "/images/porco-morto-preview.png",
   },
   {
     id: "brollo",
     index: "003",
     title: "BROLLO BORDADOS",
     year: 2026,
-    categories: ["INDUSTRY", "B2B", "DIGITAL COMMERCE"],
-    role: ["DESIGN", "DEVELOPMENT"],
+    categories: ["Indústria", "Catálogo", "Comercial"],
+    role: ["Design", "Desenvolvimento"],
     description: {
       pt: "Digitalização da presença comercial de uma operação industrial: produto, catálogo, orçamento e contato em um fluxo direto.",
       en: "Digitalizing the commercial presence of an industrial operation: product, catalog, quote and contact in one direct flow.",
@@ -66,8 +65,8 @@ export const projects: Project[] = [
     index: "004",
     title: "7D IMPORTS",
     year: 2026,
-    categories: ["COMMERCE", "BRAND", "DIGITAL EXPERIENCE"],
-    role: ["DESIGN", "DEVELOPMENT"],
+    categories: ["Comércio", "Marca", "Experiência digital"],
+    role: ["Design", "Desenvolvimento"],
     description: {
       pt: "Experiência de produto e catálogo com jornada comercial direta até o atendimento por WhatsApp.",
       en: "Product and catalog experience with a direct commercial journey into WhatsApp conversation.",
@@ -80,8 +79,8 @@ export const projects: Project[] = [
     index: "005",
     title: "BRAVOS 7D",
     year: 2026,
-    categories: ["SERVICES", "BOOKING", "DIGITAL EXPERIENCE"],
-    role: ["DESIGN", "DEVELOPMENT"],
+    categories: ["Serviços", "Agendamento", "Conversão"],
+    role: ["Design", "Desenvolvimento"],
     description: {
       pt: "Plataforma de serviços com agendamento, em produção e em uso real há mais de três meses.",
       en: "Services platform with booking, in production and in real use for more than three months.",
@@ -95,8 +94,8 @@ export const projects: Project[] = [
     index: "006",
     title: "GIIH FOTOGRAFIA",
     year: 2026,
-    categories: ["CREATIVE", "PORTFOLIO", "DIGITAL EXPERIENCE"],
-    role: ["DESIGN", "DEVELOPMENT"],
+    categories: ["Fotografia", "Portfólio", "Direção visual"],
+    role: ["Design", "Desenvolvimento"],
     description: {
       pt: "Portfólio fotográfico com foco em ritmo visual, leitura de imagem e contato direto.",
       en: "Photography portfolio focused on visual rhythm, image reading and direct contact.",

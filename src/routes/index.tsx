@@ -6,7 +6,6 @@ import {
   Contact,
   Footer,
   Manifesto,
-  Marquee,
   Proof,
   Services,
   Story,
@@ -78,7 +77,6 @@ function Index() {
       />
       <main id="main-content" className="relative overflow-hidden bg-background">
         <Hero t={t} />
-        <Marquee t={t} />
         <Manifesto t={t} />
         <Proof t={t} />
         <Systems t={t} />
