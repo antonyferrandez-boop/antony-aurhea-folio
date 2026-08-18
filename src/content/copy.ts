@@ -3,6 +3,11 @@ export type Lang = "pt" | "en";
 export const copy = {
   pt: {
     nav: {
+      work: "TRABALHOS",
+      systems: "SISTEMAS",
+      profile: "PERFIL",
+      contact: "CONTATO",
+      aurhea: "AURHEA",
       menu: "MENU",
       close: "FECHAR",
       openMenu: "Abrir menu de navegação",
@@ -211,6 +216,11 @@ export const copy = {
   },
   en: {
     nav: {
+      work: "WORK",
+      systems: "SYSTEMS",
+      profile: "PROFILE",
+      contact: "CONTACT",
+      aurhea: "AURHEA",
       menu: "MENU",
       close: "CLOSE",
       openMenu: "Open navigation menu",

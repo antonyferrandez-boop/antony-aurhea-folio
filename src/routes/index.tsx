@@ -75,7 +75,7 @@ function Index() {
         lang={lang}
         onToggleLang={() => setLang((current) => (current === "pt" ? "en" : "pt"))}
       />
-      <main id="main-content" className="relative overflow-hidden bg-background">
+      <main id="main-content" className="relative bg-background">
         <Hero t={t} />
         <Manifesto t={t} />
         <Proof t={t} />

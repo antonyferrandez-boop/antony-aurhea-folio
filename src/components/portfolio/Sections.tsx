@@ -4,6 +4,7 @@ import type { Copy, Lang } from "@/content/copy";
 import { projects } from "@/content/projects";
 import { links } from "@/lib/links";
 import { ArrowLink, Container } from "./primitives";
+import { CinematicCase } from "./CinematicCase";
 import { Reveal } from "./Reveal";
 import { ScrollDrift } from "./ScrollDrift";
 
@@ -145,47 +146,54 @@ export function Systems({ t }: { t: Copy }) {
           </p>
         </div>
 
-        <div className="mt-16 grid gap-8 lg:grid-cols-12 lg:gap-12">
-          <ScrollDrift className="lg:col-span-7" speed={0.055}>
-            <Reveal>
-              <div className="case-preview group relative overflow-hidden rounded-[1.35rem] bg-[#20160e] p-3 sm:p-5">
-                <img
-                  src="/images/porco-morto-preview.png"
-                  alt="Prévia do projeto Porco Morto"
-                  loading="lazy"
-                  decoding="async"
-                  className="aspect-[16/10] w-full rounded-[0.85rem] object-contain transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.015]"
-                />
-                <div className="case-preview-caption">
-                  <span>{t.systems.caseTitle}</span>
-                  <span>{t.systems.caseSub}</span>
+        <CinematicCase className="mt-16">
+          <div className="case-cinematic-stage">
+            <span aria-hidden="true" className="case-cinematic-orbit" />
+            <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+              <div className="case-cinematic-visual relative lg:col-span-7">
+                <div className="case-preview group relative overflow-hidden rounded-[1.35rem] bg-[#20160e] p-3 sm:p-5">
+                  <img
+                    src="/images/porco-morto-preview.png"
+                    alt="Prévia do projeto Porco Morto"
+                    loading="lazy"
+                    decoding="async"
+                    className="aspect-[16/10] w-full rounded-[0.85rem] object-contain transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.015]"
+                  />
+                  <div className="case-preview-caption">
+                    <span>{t.systems.caseTitle}</span>
+                    <span>{t.systems.caseSub}</span>
+                  </div>
                 </div>
               </div>
-            </Reveal>
-          </ScrollDrift>
-          <div className="lg:col-span-5 lg:pt-8">
-            <ol className="case-flow">
-              {t.systems.flow.map((step, index) => (
-                <li key={step}>
-                  <span className="case-flow-index">0{index + 1}</span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ol>
-            <ArrowLink href="https://porcomorto.lovable.app/" external className="mt-10">
-              {t.systems.visit}
-            </ArrowLink>
-          </div>
-        </div>
+              <div className="lg:col-span-5 lg:pt-8">
+                <ol className="case-flow case-cinematic-flow">
+                  {t.systems.flow.map((step, index) => (
+                    <li key={step}>
+                      <span className="case-flow-index">0{index + 1}</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+                <ArrowLink
+                  href="https://porcomorto.lovable.app/"
+                  external
+                  className="case-cinematic-action mt-10"
+                >
+                  {t.systems.visit}
+                </ArrowLink>
+              </div>
+            </div>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {t.systems.pillars.map((pillar, index) => (
-            <Reveal key={pillar.t} delay={index * 70} className="case-pillar">
-              <p className="meta text-primary">{pillar.t}</p>
-              <p className="mt-5 text-sm leading-relaxed text-white/62">{pillar.d}</p>
-            </Reveal>
-          ))}
-        </div>
+            <div className="mt-12 grid gap-4 md:grid-cols-3">
+              {t.systems.pillars.map((pillar) => (
+                <div key={pillar.t} className="case-pillar case-cinematic-pillar">
+                  <p className="meta text-primary">{pillar.t}</p>
+                  <p className="mt-5 text-sm leading-relaxed text-white/62">{pillar.d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CinematicCase>
       </Container>
     </section>
   );

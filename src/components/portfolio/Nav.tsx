@@ -2,19 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import type { Copy, Lang } from "@/content/copy";
 import { Container } from "./primitives";
 
-type Item = { id: string; label: string };
-
-const items: Item[] = [
-  { id: "work", label: "WORK" },
-  { id: "systems", label: "SYSTEMS" },
-  { id: "profile", label: "PROFILE" },
-  { id: "contact", label: "CONTACT" },
-];
-
 export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLang: () => void }) {
   const [open, setOpen] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const items = [
+    { id: "work", label: t.nav.work },
+    { id: "systems", label: t.nav.systems },
+    { id: "profile", label: t.nav.profile },
+    { id: "contact", label: t.nav.contact },
+  ];
 
   useEffect(() => {
     if (!open) return;
@@ -49,18 +46,10 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-[#08090c]/90">
-      <Container className="flex h-16 items-center justify-between sm:h-20">
-        <a
-          href="#top"
-          className="wordmark text-sm text-white"
-          aria-label="Antony Rodrigues — Início"
-        >
-          ANTONY<span>R</span>
-        </a>
-
+      <Container className="flex h-16 items-center justify-end sm:h-20">
         <nav
           aria-label={lang === "pt" ? "Navegação principal" : "Main navigation"}
-          className="hidden items-center gap-7 lg:flex"
+          className="hidden flex-1 items-center justify-center gap-7 lg:flex"
         >
           {items.map((item) => (
             <a key={item.id} href={`#${item.id}`} className="nav-link">
@@ -73,7 +62,7 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
             rel="noopener noreferrer"
             className="nav-link text-primary-highlight"
           >
-            AURHEA
+            {t.nav.aurhea}
           </a>
         </nav>
 
@@ -111,10 +100,7 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
           aria-label={t.nav.menu}
           className="fixed inset-0 z-50 bg-[#08090c] lg:hidden"
         >
-          <Container className="flex h-16 items-center justify-between sm:h-20">
-            <span className="wordmark text-sm text-white">
-              ANTONY<span>R</span>
-            </span>
+          <Container className="flex h-16 items-center justify-end sm:h-20">
             <button
               type="button"
               onClick={() => {
@@ -148,7 +134,7 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
                 className="mobile-nav-link text-primary"
                 style={{ transitionDelay: "180ms" }}
               >
-                AURHEA
+                {t.nav.aurhea}
               </a>
             </div>
           </Container>
