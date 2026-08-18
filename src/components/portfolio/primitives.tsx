@@ -1,13 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export function Container({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function Container({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <div className={cn("mx-auto w-full max-w-[92rem] px-5 sm:px-8 lg:px-14", className)}>
       {children}
@@ -28,6 +22,7 @@ export function ArrowLink({
   href,
   children,
   external,
+  externalLabel,
   variant = "outline",
   className,
   icon = "up-right",
@@ -35,6 +30,7 @@ export function ArrowLink({
   href: string;
   children: ReactNode;
   external?: boolean;
+  externalLabel?: string;
   variant?: "outline" | "solid" | "bare";
   className?: string;
   icon?: "up-right" | "right" | "down";
@@ -56,7 +52,10 @@ export function ArrowLink({
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className={cn(base, styles, "meta", className)}
     >
-      <span>{children}</span>
+      <span>
+        {children}
+        {external && externalLabel ? <span className="sr-only"> — {externalLabel}</span> : null}
+      </span>
       <span
         aria-hidden="true"
         className="translate-x-0 text-sm transition-transform duration-200 group-hover:translate-x-1"

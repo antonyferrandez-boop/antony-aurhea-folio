@@ -10,10 +10,14 @@ export const links = {
   whatsapp: (lang: "pt" | "en") =>
     `https://wa.me/5554996610207?text=${encodeURIComponent(waMessage[lang])}`,
   linkedin: "https://www.linkedin.com/in/antony-rodrigues-688416284/",
-  github: "https://github.com/antonyrodrigues-dev",
+  github: "https://github.com/antonyferrandez-boop",
+  githubHandle: "antonyferrandez-boop",
   instagram: "https://www.instagram.com/antonyzz07/",
   instagramHandle: "@antonyzz07",
   aurhea: "https://www.aurheatec.com.br/",
+  projects: {
+    porcoMorto: "https://porcomorto.lovable.app/",
+  },
 } as const;
 
 export const external = {

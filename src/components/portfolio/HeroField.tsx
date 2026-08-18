@@ -2,29 +2,38 @@ import { useEffect, useRef } from "react";
 
 type Point = { x: number; y: number };
 
+const TAU = Math.PI * 2;
+
 export function HeroField() {
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const prismRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const root = rootRef.current;
     const canvas = canvasRef.current;
-    const prism = prismRef.current;
-    const context = canvas?.getContext("2d");
+    const context = canvas?.getContext("2d", { alpha: true });
     if (!root || !canvas || !context) return;
+    const interactionRoot = root.closest<HTMLElement>(".hero-sticky") ?? root;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const pointer: Point = { x: 0, y: 0 };
     const target: Point = { x: 0, y: 0 };
     let width = 0;
     let height = 0;
     let frame = 0;
+    let lastFrame = 0;
+    let visible = true;
     let pointerActive = false;
+    let touchImpulseUntil = 0;
+    let rowGradients: CanvasGradient[] = [];
+    let ribbonTop: Point[] = [];
+    let ribbonBottom: Point[] = [];
 
     const resize = () => {
       const bounds = root.getBoundingClientRect();
-      const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+      const compact = bounds.width < 640;
+      const ratio = Math.min(window.devicePixelRatio || 1, compact ? 1.1 : 1.35);
       width = Math.max(1, bounds.width);
       height = Math.max(1, bounds.height);
       canvas.width = Math.round(width * ratio);
@@ -32,8 +41,18 @@ export function HeroField() {
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      target.x = pointer.x = width * 0.68;
-      target.y = pointer.y = height * 0.48;
+      target.x = pointer.x = width * (compact ? 0.62 : 0.7);
+      target.y = pointer.y = height * 0.5;
+      const rows = compact ? 13 : width < 1024 ? 18 : 24;
+      rowGradients = Array.from({ length: rows }, (_, row) => {
+        const depth = row / Math.max(1, rows - 1);
+        const gradient = context.createLinearGradient(0, 0, width, 0);
+        gradient.addColorStop(0, "rgba(76, 193, 224, 0)");
+        gradient.addColorStop(compact ? 0.18 : 0.3, `rgba(90, 202, 230, ${0.07 + depth * 0.07})`);
+        gradient.addColorStop(0.72, `rgba(108, 220, 244, ${0.24 + depth * 0.3})`);
+        gradient.addColorStop(1, "rgba(55, 173, 205, 0)");
+        return gradient;
+      });
     };
 
     const onPointerMove = (event: PointerEvent) => {
@@ -43,125 +62,189 @@ export function HeroField() {
       pointerActive = true;
     };
 
+    const onPointerDown = (event: PointerEvent) => {
+      if (finePointer) return;
+      onPointerMove(event);
+      touchImpulseUntil = performance.now() + 720;
+      if (visible && !reducedMotion) start();
+    };
+
     const onPointerLeave = () => {
-      target.x = width * 0.68;
-      target.y = height * 0.48;
+      target.x = width * 0.7;
+      target.y = height * 0.5;
       pointerActive = false;
     };
 
-    const drawCell = (
-      corners: [Point, Point, Point, Point],
-      fillAlpha: number,
-      strokeAlpha: number,
-    ) => {
+    const curvePoint = (x: number, baseY: number, row: number, rowCount: number, time: number) => {
+      const normalizedX = x / width;
+      const depth = row / Math.max(1, rowCount - 1);
+      const envelope = Math.sin(Math.min(1, Math.max(0, normalizedX)) * Math.PI);
+      const primary = Math.sin(normalizedX * TAU * 1.18 + time * 0.00032 + row * 0.21);
+      const secondary = Math.sin(normalizedX * TAU * 2.85 - time * 0.00018 + row * 0.47);
+      const amplitude = height * (0.018 + depth * 0.046) * envelope;
+      let y = baseY + primary * amplitude + secondary * amplitude * 0.28;
+
+      if (pointerActive && (finePointer || time < touchImpulseUntil)) {
+        const radius = Math.max(150, width * 0.18);
+        const dx = x - pointer.x;
+        const dy = y - pointer.y;
+        const distance = Math.hypot(dx, dy);
+        const influence = Math.max(0, 1 - distance / radius);
+        const ripple = Math.sin(distance * 0.032 - time * 0.004) * height * 0.014;
+        y += (pointer.y - y) * influence * 0.12 + ripple * influence * influence;
+      }
+
+      return y;
+    };
+
+    const drawWave = (row: number, rowCount: number, time: number) => {
+      const compact = width < 640;
+      const startY = height * (compact ? 0.24 : 0.12);
+      const fieldHeight = height * (compact ? 0.64 : 0.78);
+      const depth = row / Math.max(1, rowCount - 1);
+      const baseY = startY + depth * fieldHeight;
+      const step = compact ? 18 : 22;
+
       context.beginPath();
-      context.moveTo(corners[0].x, corners[0].y);
-      corners.slice(1).forEach((point) => context.lineTo(point.x, point.y));
-      context.closePath();
-      context.fillStyle = `rgba(75, 194, 226, ${fillAlpha})`;
-      context.fill();
-      context.strokeStyle = `rgba(144, 225, 244, ${strokeAlpha})`;
-      context.lineWidth = 0.65;
+      for (let x = -step; x <= width + step; x += step) {
+        const y = curvePoint(x, baseY, row, rowCount, time);
+        if (x === -step) context.moveTo(x, y);
+        else context.lineTo(x, y);
+      }
+      context.strokeStyle = rowGradients[row] ?? "rgba(108, 220, 244, 0.16)";
+      context.lineWidth = 0.65 + depth;
       context.stroke();
+
+      if (row % (compact ? 5 : 4) !== 0) return;
+      const nodeX = width * (0.48 + ((row * 0.137 + time * 0.000015) % 0.42));
+      const nodeY = curvePoint(nodeX, baseY, row, rowCount, time);
+      context.beginPath();
+      context.arc(nodeX, nodeY, 1.15 + depth * 0.65, 0, TAU);
+      context.fillStyle = `rgba(126, 228, 248, ${0.3 + depth * 0.36})`;
+      context.fill();
+    };
+
+    const drawRibbon = (time: number) => {
+      const compact = width < 640;
+      const points = compact ? 22 : 36;
+      const center = height * (compact ? 0.52 : 0.56);
+      if (ribbonTop.length !== points + 1) {
+        ribbonTop = Array.from({ length: points + 1 }, () => ({ x: 0, y: 0 }));
+        ribbonBottom = Array.from({ length: points + 1 }, () => ({ x: 0, y: 0 }));
+      }
+
+      for (let index = 0; index <= points; index += 1) {
+        const x = (index / points) * width;
+        const normalizedX = x / width;
+        const envelope = Math.sin(normalizedX * Math.PI);
+        const wave = Math.sin(normalizedX * TAU * 1.3 + time * 0.00029) * height * 0.072 * envelope;
+        const thickness = height * (0.015 + 0.016 * Math.sin(normalizedX * Math.PI));
+        ribbonTop[index]!.x = x;
+        ribbonTop[index]!.y = center + wave - thickness;
+        ribbonBottom[index]!.x = x;
+        ribbonBottom[index]!.y = center + wave + thickness;
+      }
+
+      const fill = context.createLinearGradient(width * 0.25, 0, width, 0);
+      fill.addColorStop(0, "rgba(48, 169, 202, 0)");
+      fill.addColorStop(0.68, "rgba(68, 190, 221, 0.1)");
+      fill.addColorStop(1, "rgba(48, 169, 202, 0)");
+      context.beginPath();
+      ribbonTop.forEach((point, index) => {
+        if (index === 0) context.moveTo(point.x, point.y);
+        else context.lineTo(point.x, point.y);
+      });
+      for (let index = ribbonBottom.length - 1; index >= 0; index -= 1) {
+        const point = ribbonBottom[index]!;
+        context.lineTo(point.x, point.y);
+      }
+      context.closePath();
+      context.fillStyle = fill;
+      context.fill();
     };
 
     const render = (time: number) => {
-      context.clearRect(0, 0, width, height);
-      pointer.x += (target.x - pointer.x) * 0.075;
-      pointer.y += (target.y - pointer.y) * 0.075;
-
       const compact = width < 640;
-      const columns = compact ? 9 : width < 1024 ? 14 : 20;
-      const rows = compact ? 13 : 15;
-      const horizon = height * (compact ? 0.18 : 0.25);
-      const planeHeight = height * 0.95;
-      const pointerRadius = Math.min(width, height) * (compact ? 0.38 : 0.34);
+      const frameInterval = 1000 / (compact ? 30 : 45);
+      if (time - lastFrame >= frameInterval || reducedMotion) {
+        lastFrame = time;
+        context.clearRect(0, 0, width, height);
+        pointer.x += (target.x - pointer.x) * 0.075;
+        pointer.y += (target.y - pointer.y) * 0.075;
 
-      for (let row = 0; row < rows; row += 1) {
-        const near = row / rows;
-        const far = (row + 1) / rows;
-        const y0 = horizon + Math.pow(near, 1.62) * planeHeight;
-        const y1 = horizon + Math.pow(far, 1.62) * planeHeight;
-        const spread0 = width * (0.34 + near * 1.16);
-        const spread1 = width * (0.34 + far * 1.16);
-        const left0 = width * 0.58 - spread0 / 2;
-        const left1 = width * 0.58 - spread1 / 2;
+        drawRibbon(time);
+        const rows = compact ? 13 : width < 1024 ? 18 : 24;
+        for (let row = 0; row < rows; row += 1) drawWave(row, rows, time);
 
-        for (let column = 0; column < columns; column += 1) {
-          const x00 = left0 + (spread0 * column) / columns;
-          const x01 = left0 + (spread0 * (column + 1)) / columns;
-          const x10 = left1 + (spread1 * column) / columns;
-          const x11 = left1 + (spread1 * (column + 1)) / columns;
-          const centerX = (x00 + x01 + x10 + x11) / 4;
-          const centerY = (y0 + y1) / 2;
-          const distance = Math.hypot(centerX - pointer.x, centerY - pointer.y);
-          const influence = pointerActive ? Math.max(0, 1 - distance / pointerRadius) : 0;
-          const signal = (Math.sin(time * 0.00105 - row * 0.54 + column * 0.36) + 1) / 2;
-          const signalBand = Math.pow(signal, 7) * (0.3 + far * 0.7);
-          const lift = influence * influence * (compact ? 8 : 18);
-          const gap = Math.max(0.6, far * 2.2);
-
-          drawCell(
-            [
-              { x: x00 + gap, y: y0 + gap - lift },
-              { x: x01 - gap, y: y0 + gap - lift },
-              { x: x11 - gap, y: y1 - gap - lift },
-              { x: x10 + gap, y: y1 - gap - lift },
-            ],
-            0.012 + signalBand * 0.12 + influence * 0.2,
-            0.07 + signalBand * 0.18 + influence * 0.38,
-          );
-        }
+        const glowRadius = Math.min(width, height) * (compact ? 0.42 : 0.3);
+        const glow = context.createRadialGradient(
+          pointer.x,
+          pointer.y,
+          0,
+          pointer.x,
+          pointer.y,
+          glowRadius,
+        );
+        glow.addColorStop(0, `rgba(66, 190, 222, ${pointerActive ? 0.11 : 0.055})`);
+        glow.addColorStop(1, "rgba(66, 190, 222, 0)");
+        context.fillStyle = glow;
+        context.fillRect(0, 0, width, height);
       }
 
-      const glow = context.createRadialGradient(
-        pointer.x,
-        pointer.y,
-        0,
-        pointer.x,
-        pointer.y,
-        pointerRadius * 1.1,
-      );
-      glow.addColorStop(0, `rgba(57, 188, 224, ${pointerActive ? 0.12 : 0.055})`);
-      glow.addColorStop(1, "rgba(57, 188, 224, 0)");
-      context.fillStyle = glow;
-      context.fillRect(0, 0, width, height);
-
-      if (prism) {
-        const dx = (pointer.x / width - 0.5) * 8;
-        const dy = (pointer.y / height - 0.5) * -5;
-        const drift = reducedMotion ? 0 : Math.sin(time * 0.00042) * 7;
-        prism.style.transform = `translate3d(${dx}px, ${dy}px, 0) rotateX(${62 + dy * 0.28}deg) rotateZ(${38 + drift}deg)`;
-      }
-
-      if (!reducedMotion) frame = window.requestAnimationFrame(render);
+      if (!reducedMotion && visible && !document.hidden)
+        frame = window.requestAnimationFrame(render);
     };
 
-    const observer = new ResizeObserver(resize);
-    observer.observe(root);
-    root.addEventListener("pointermove", onPointerMove);
-    root.addEventListener("pointerleave", onPointerLeave);
+    const start = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(render);
+    };
+
+    const onVisibilityChange = () => {
+      if (document.hidden) window.cancelAnimationFrame(frame);
+      else if (visible && !reducedMotion) start();
+    };
+
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        visible = Boolean(entry?.isIntersecting);
+        if (visible && !reducedMotion) start();
+        else window.cancelAnimationFrame(frame);
+      },
+      { rootMargin: "15% 0px" },
+    );
+    const resizeObserver = new ResizeObserver(() => {
+      resize();
+      if (reducedMotion) render(0);
+    });
+
+    resizeObserver.observe(root);
+    visibilityObserver.observe(root);
+    interactionRoot.addEventListener("pointermove", onPointerMove, { passive: true });
+    interactionRoot.addEventListener("pointerdown", onPointerDown, { passive: true });
+    interactionRoot.addEventListener("pointerleave", onPointerLeave, { passive: true });
+    document.addEventListener("visibilitychange", onVisibilityChange);
     resize();
     render(0);
 
     return () => {
-      observer.disconnect();
-      root.removeEventListener("pointermove", onPointerMove);
-      root.removeEventListener("pointerleave", onPointerLeave);
+      resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      interactionRoot.removeEventListener("pointermove", onPointerMove);
+      interactionRoot.removeEventListener("pointerdown", onPointerDown);
+      interactionRoot.removeEventListener("pointerleave", onPointerLeave);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       window.cancelAnimationFrame(frame);
     };
   }, []);
 
   return (
     <div ref={rootRef} className="hero-field" aria-hidden="true">
+      <span className="hero-aurora hero-aurora-one" />
+      <span className="hero-aurora hero-aurora-two" />
       <canvas ref={canvasRef} className="hero-field-canvas" />
-      <div ref={prismRef} className="hero-prism">
-        <span className="hero-prism-plane hero-prism-plane-one" />
-        <span className="hero-prism-plane hero-prism-plane-two" />
-        <span className="hero-prism-plane hero-prism-plane-three" />
-        <i className="hero-prism-core" />
-      </div>
       <span className="hero-field-lens" />
+      <span className="hero-field-grain" />
     </div>
   );
 }

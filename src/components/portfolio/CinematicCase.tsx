@@ -27,8 +27,8 @@ export function CinematicCase({ children, className }: CinematicCaseProps) {
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: root,
-            start: "top top+=48",
-            end: () => `+=${Math.round(window.innerHeight * 1.45)}`,
+            start: "top top+=80",
+            end: () => `+=${Math.round(window.innerHeight * 1.05)}`,
             pin: stage,
             scrub: 0.75,
             anticipatePin: 1,
@@ -68,7 +68,7 @@ export function CinematicCase({ children, className }: CinematicCaseProps) {
             { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.2, ease: "power3.out" },
             "-=0.32",
           )
-          .to(".case-cinematic-orbit", { rotation: 110, x: -78, ease: "none" }, 0);
+          .to(".case-signal", { xPercent: -9, autoAlpha: 0.72, ease: "none" }, 0);
       });
 
       return () => media.revert();

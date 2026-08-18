@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import type { Copy, Lang } from "@/content/copy";
+import { links } from "@/lib/links";
 import { Container } from "./primitives";
 
 export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLang: () => void }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const [activeSection, setActiveSection] = useState("top");
   const overlayRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const items = [
@@ -16,10 +17,27 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
   ];
 
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 18);
+    const update = () => setScrolled(window.scrollY > 32);
     update();
     window.addEventListener("scroll", update, { passive: true });
     return () => window.removeEventListener("scroll", update);
+  }, []);
+
+  useEffect(() => {
+    const observed = ["work", "systems", "profile", "contact"]
+      .map((id) => document.getElementById(id))
+      .filter((section): section is HTMLElement => Boolean(section));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visibleEntry?.target.id) setActiveSection(visibleEntry.target.id);
+      },
+      { rootMargin: "-24% 0px -62%", threshold: [0, 0.12, 0.3] },
+    );
+    observed.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -54,54 +72,58 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
   }, [open]);
 
   return (
-    <header
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-      className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled || hovered || open ? "is-active" : ""}`}
-    >
-      <Container className="flex h-16 items-center justify-end sm:h-20">
-        <nav
-          aria-label={lang === "pt" ? "Navegação principal" : "Main navigation"}
-          className="hidden flex-1 items-center justify-center gap-7 lg:flex"
-        >
-          {items.map((item) => (
-            <a key={item.id} href={`#${item.id}`} className="nav-link">
-              {item.label}
+    <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "is-scrolled" : ""}`}>
+      <Container>
+        <div className="nav-frame flex h-16 items-center justify-end sm:h-20">
+          <nav
+            aria-label={lang === "pt" ? "Navegação principal" : "Main navigation"}
+            className="hidden flex-1 items-center justify-center gap-7 lg:flex"
+          >
+            {items.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                className={`nav-link ${activeSection === item.id ? "is-current" : ""}`}
+                aria-current={activeSection === item.id ? "location" : undefined}
+              >
+                {item.label}
+              </a>
+            ))}
+            <a
+              href={links.aurhea}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-link text-primary-highlight"
+            >
+              {t.nav.aurhea}
+              <span className="sr-only"> — {t.nav.newTab}</span>
             </a>
-          ))}
-          <a
-            href="https://www.aurheatec.com.br/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link text-primary-highlight"
-          >
-            {t.nav.aurhea}
-          </a>
-        </nav>
+          </nav>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onToggleLang}
-            aria-label={t.nav.langLabel}
-            className="lang-toggle"
-          >
-            <span className={lang === "pt" ? "text-primary" : undefined}>PT</span>
-            <span aria-hidden="true" className="text-white/20">
-              /
-            </span>
-            <span className={lang === "en" ? "text-primary" : undefined}>EN</span>
-          </button>
-          <button
-            ref={triggerRef}
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label={t.nav.openMenu}
-            aria-expanded={open}
-            className="menu-trigger lg:hidden"
-          >
-            {t.nav.menu}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onToggleLang}
+              aria-label={t.nav.langLabel}
+              className="lang-toggle"
+            >
+              <span className={lang === "pt" ? "text-primary" : undefined}>PT</span>
+              <span aria-hidden="true" className="text-white/20">
+                /
+              </span>
+              <span className={lang === "en" ? "text-primary" : undefined}>EN</span>
+            </button>
+            <button
+              ref={triggerRef}
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label={t.nav.openMenu}
+              aria-expanded={open}
+              className="menu-trigger lg:hidden"
+            >
+              {t.nav.menu}
+            </button>
+          </div>
         </div>
       </Container>
 
@@ -111,7 +133,7 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
           role="dialog"
           aria-modal="true"
           aria-label={t.nav.menu}
-          className="fixed inset-0 z-50 bg-[#08090c] lg:hidden"
+          className="mobile-nav-overlay fixed inset-0 z-50 bg-[#08090c] lg:hidden"
         >
           <Container className="flex h-16 items-center justify-end sm:h-20">
             <button
@@ -140,7 +162,7 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
                 </a>
               ))}
               <a
-                href="https://www.aurheatec.com.br/"
+                href={links.aurhea}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setOpen(false)}
@@ -148,6 +170,7 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
                 style={{ transitionDelay: "180ms" }}
               >
                 {t.nav.aurhea}
+                <span className="sr-only"> — {t.nav.newTab}</span>
               </a>
             </div>
           </Container>

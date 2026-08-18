@@ -1,4 +1,4 @@
-import { useState, type PointerEvent } from "react";
+import { useState, type CSSProperties, type PointerEvent } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Minus, Plus } from "lucide-react";
 import type { Copy, Lang } from "@/content/copy";
 import { projects } from "@/content/projects";
@@ -8,6 +8,7 @@ import { CinematicCase } from "./CinematicCase";
 import { ProjectScreen } from "./ProjectScreen";
 import { Reveal } from "./Reveal";
 import { ScrollDrift } from "./ScrollDrift";
+import { useAutoCycle } from "./useAutoCycle";
 
 function Eyebrow({ children }: { children: string }) {
   return <p className="section-eyebrow">{children}</p>;
@@ -24,13 +25,17 @@ export function Manifesto({ t }: { t: Copy }) {
     <section
       id="manifesto"
       className="manifesto-chapter relative overflow-hidden py-24 sm:py-32 lg:py-40"
+      onPointerMove={setSpotlight}
     >
       <div aria-hidden="true" className="manifesto-shape" />
       <Container className="relative">
         <Eyebrow>{t.manifesto.eyebrow}</Eyebrow>
         <div className="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-8">
           <Reveal className="lg:col-span-8">
-            <h2 className="display max-w-5xl text-[12vw] leading-[0.86] text-[#10141a] sm:text-7xl lg:text-[6.25rem]">
+            <h2
+              data-motion-title
+              className="display max-w-5xl text-[11vw] leading-[0.88] text-[#10141a] sm:text-6xl lg:text-[5.45rem]"
+            >
               {t.manifesto.title}
             </h2>
           </Reveal>
@@ -40,25 +45,19 @@ export function Manifesto({ t }: { t: Copy }) {
             </p>
           </Reveal>
         </div>
-        <Reveal delay={130} className="mt-14 grid gap-10 lg:mt-24 lg:grid-cols-12">
+        <Reveal delay={130} className="mt-14 grid gap-10 lg:mt-20 lg:grid-cols-12">
           <p className="max-w-2xl text-lg leading-relaxed text-[#485462] sm:text-xl lg:col-span-5">
             {t.manifesto.body}
           </p>
-          <div className="manifesto-loop-shell lg:col-span-7 lg:self-end">
-            <ul className="manifesto-loop-track">
-              {[0, 1].flatMap((copyIndex) =>
-                t.manifesto.notes.map((note, index) => (
-                  <li
-                    key={`${copyIndex}-${note}`}
-                    className="manifesto-note"
-                    data-copy={copyIndex === 1}
-                    aria-hidden={copyIndex === 1}
-                  >
-                    <span className="font-editorial">0{index + 1}</span>
-                    <span>{note}</span>
-                  </li>
-                )),
-              )}
+          <div className="manifesto-principles-wrap lg:col-span-7 lg:self-end">
+            <span className="manifesto-principles-rule" data-motion-line aria-hidden="true" />
+            <ul className="manifesto-principles">
+              {t.manifesto.notes.map((note, index) => (
+                <li key={note} className="manifesto-note">
+                  <span className="font-editorial">0{index + 1}</span>
+                  <span>{note}</span>
+                </li>
+              ))}
             </ul>
           </div>
         </Reveal>
@@ -68,17 +67,28 @@ export function Manifesto({ t }: { t: Copy }) {
 }
 
 export function Proof({ t }: { t: Copy }) {
-  const [active, setActive] = useState(0);
-  const item = t.proof.items[active];
-  const show = (direction: number) =>
-    setActive((current) => (current + direction + t.proof.items.length) % t.proof.items.length);
+  const cycle = useAutoCycle({ length: t.proof.items.length, interval: 6200 });
+  const active = cycle.active;
+  const item = t.proof.items[active]!;
 
   return (
-    <section className="bg-background py-24 sm:py-32 lg:py-40">
+    <section
+      ref={cycle.rootRef}
+      className="proof-chapter bg-background py-24 sm:py-32 lg:py-36"
+      onMouseEnter={() => cycle.setPaused(true)}
+      onMouseLeave={() => cycle.setPaused(false)}
+      onFocusCapture={() => cycle.setPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) cycle.setPaused(false);
+      }}
+    >
       <Container>
         <Eyebrow>{t.proof.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-12 lg:grid-cols-12 lg:items-end">
-          <h2 className="display max-w-3xl text-5xl leading-[0.88] text-foreground sm:text-6xl lg:col-span-8 lg:text-7xl">
+          <h2
+            data-motion-title
+            className="display max-w-3xl text-5xl leading-[0.9] text-foreground sm:text-6xl lg:col-span-8 lg:text-[4.15rem]"
+          >
             {t.proof.title}
           </h2>
           <p className="text-sm leading-relaxed text-muted-foreground lg:col-span-4">
@@ -86,7 +96,10 @@ export function Proof({ t }: { t: Copy }) {
           </p>
         </div>
 
-        <div className="proof-deck mt-14 grid overflow-hidden lg:grid-cols-[1.15fr_0.85fr]">
+        <div
+          data-motion-screen
+          className="proof-deck mt-14 grid overflow-hidden lg:grid-cols-[1.15fr_0.85fr]"
+        >
           <div className="proof-content">
             <p className="meta text-primary">{item.k}</p>
             <div key={item.k} className="proof-slide max-w-xl" aria-live="polite">
@@ -107,7 +120,7 @@ export function Proof({ t }: { t: Copy }) {
               <div className="proof-nav">
                 <button
                   type="button"
-                  onClick={() => show(-1)}
+                  onClick={() => cycle.shift(-1)}
                   aria-label={t.proof.previous}
                   className="circle-control"
                 >
@@ -115,7 +128,7 @@ export function Proof({ t }: { t: Copy }) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => show(1)}
+                  onClick={() => cycle.shift(1)}
                   aria-label={t.proof.next}
                   className="circle-control"
                 >
@@ -129,7 +142,7 @@ export function Proof({ t }: { t: Copy }) {
               <button
                 key={proof.k}
                 type="button"
-                onClick={() => setActive(index)}
+                onClick={() => cycle.select(index)}
                 aria-pressed={active === index}
                 className={`proof-picker ${active === index ? "is-active" : ""}`}
               >
@@ -138,6 +151,15 @@ export function Proof({ t }: { t: Copy }) {
                 <span className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {proof.v}
                 </span>
+                {active === index && (
+                  <span className="auto-cycle-progress" aria-hidden="true">
+                    <span
+                      key={`${cycle.cycleKey}-${index}-${cycle.running}`}
+                      className={cycle.running ? "is-running" : ""}
+                      style={{ "--cycle-duration": `${cycle.interval}ms` } as CSSProperties}
+                    />
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -156,7 +178,10 @@ export function Systems({ t }: { t: Copy }) {
       <Container>
         <Eyebrow>{t.systems.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-10 lg:grid-cols-12">
-          <h2 className="display max-w-4xl text-5xl leading-[0.88] text-foreground sm:text-6xl lg:col-span-8 lg:text-7xl">
+          <h2
+            data-motion-title
+            className="display max-w-4xl text-5xl leading-[0.9] text-foreground sm:text-6xl lg:col-span-8 lg:text-[4.35rem]"
+          >
             {t.systems.title}
           </h2>
           <p className="self-end text-base leading-relaxed text-muted-foreground lg:col-span-4">
@@ -166,13 +191,13 @@ export function Systems({ t }: { t: Copy }) {
 
         <CinematicCase className="mt-16">
           <div className="case-cinematic-stage">
-            <span aria-hidden="true" className="case-cinematic-orbit" />
-            <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+            <span aria-hidden="true" className="case-signal" />
+            <div data-motion-screen className="grid gap-8 lg:grid-cols-12 lg:gap-12">
               <div className="case-cinematic-visual relative lg:col-span-7">
                 <div className="case-preview group relative overflow-hidden rounded-[1.35rem] bg-[#20160e] p-3 sm:p-5">
                   <img
                     src="/images/porco-morto-preview.png"
-                    alt="Prévia do projeto Porco Morto"
+                    alt={t.systems.previewAlt}
                     loading="lazy"
                     decoding="async"
                     className="aspect-[16/10] w-full rounded-[0.85rem] object-contain transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.015]"
@@ -184,17 +209,23 @@ export function Systems({ t }: { t: Copy }) {
                 </div>
               </div>
               <div className="lg:col-span-5 lg:pt-8">
-                <ol className="case-flow case-cinematic-flow">
-                  {t.systems.flow.map((step, index) => (
-                    <li key={step}>
-                      <span className="case-flow-index">0{index + 1}</span>
-                      <span>{step}</span>
-                    </li>
-                  ))}
-                </ol>
+                <div className="case-flow-wrap">
+                  <ol className="case-flow case-cinematic-flow">
+                    {t.systems.flow.map((step, index) => (
+                      <li key={step}>
+                        <span className="case-flow-index">0{index + 1}</span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                  <span className="case-flow-tracer" aria-hidden="true">
+                    <i />
+                  </span>
+                </div>
                 <ArrowLink
-                  href="https://porcomorto.lovable.app/"
+                  href={links.projects.porcoMorto}
                   external
+                  externalLabel={t.nav.newTab}
                   className="case-cinematic-action mt-10"
                 >
                   {t.systems.visit}
@@ -222,20 +253,29 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
     0,
     projects.findIndex((project) => project.id === "porco-morto"),
   );
-  const [activeIndex, setActiveIndex] = useState(initialProject);
+  const cycle = useAutoCycle({ length: projects.length, initial: initialProject, interval: 7200 });
+  const activeIndex = cycle.active;
   const project = projects[activeIndex]!;
-  const changeProject = (direction: number) =>
-    setActiveIndex((current) => (current + direction + projects.length) % projects.length);
 
   return (
     <section
+      ref={cycle.rootRef}
       id="work"
-      className="project-chapter overflow-hidden bg-background py-24 sm:py-32 lg:py-40"
+      className="project-chapter overflow-hidden bg-background py-24 sm:py-32 lg:py-36"
+      onMouseEnter={() => cycle.setPaused(true)}
+      onMouseLeave={() => cycle.setPaused(false)}
+      onFocusCapture={() => cycle.setPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) cycle.setPaused(false);
+      }}
     >
       <Container>
         <Eyebrow>{t.work.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:items-end">
-          <h2 className="display max-w-4xl text-5xl leading-[0.88] text-foreground sm:text-6xl lg:col-span-8 lg:text-7xl">
+          <h2
+            data-motion-title
+            className="display max-w-4xl text-5xl leading-[0.9] text-foreground sm:text-6xl lg:col-span-8 lg:text-[4.35rem]"
+          >
             {t.work.title}
           </h2>
           <p className="max-w-sm text-base leading-relaxed text-muted-foreground lg:col-span-4">
@@ -243,12 +283,15 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
           </p>
         </div>
 
-        <div className="project-stage mt-14 grid gap-7 p-3 sm:p-5 lg:grid-cols-12 lg:gap-10 lg:p-7">
+        <div
+          data-motion-screen
+          className="project-stage mt-14 grid gap-7 p-3 sm:p-5 lg:grid-cols-12 lg:gap-10 lg:p-7"
+        >
           <ProjectScreen className="lg:col-span-8" motionKey={project.id}>
             <img
               key={project.id}
               src={project.image}
-              alt={`Prévia do projeto ${project.title}`}
+              alt={`${t.work.previewAlt} ${project.title}`}
               loading={activeIndex === initialProject ? "eager" : "lazy"}
               decoding="async"
               className="project-screen-media project-stage-image h-full w-full object-contain"
@@ -267,25 +310,37 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
                 {project.description[lang]}
               </p>
               <ul className="project-categories" aria-label={t.work.categories}>
-                {project.categories.map((category) => (
+                {project.categories[lang].map((category) => (
                   <li key={category}>{category}</li>
                 ))}
               </ul>
               <div className="mt-7">
                 <p className="meta text-white/40">{t.work.role}</p>
-                <p className="mt-2 text-sm text-white/78">{project.role.join(" · ")}</p>
+                <p className="mt-2 text-sm text-white/78">{project.role[lang].join(" · ")}</p>
               </div>
               {project.status && <p className="meta mt-6 text-primary">{project.status[lang]}</p>}
             </div>
+            <span className="project-auto-progress" aria-hidden="true">
+              <span
+                key={`${cycle.cycleKey}-${project.id}-${cycle.running}`}
+                className={cycle.running ? "is-running" : ""}
+                style={{ "--cycle-duration": `${cycle.interval}ms` } as CSSProperties}
+              />
+            </span>
             <div className="mt-9 flex flex-wrap items-center gap-3">
               {project.liveUrl && (
-                <ArrowLink href={project.liveUrl} external variant="solid">
+                <ArrowLink
+                  href={project.liveUrl}
+                  external
+                  externalLabel={t.nav.newTab}
+                  variant="solid"
+                >
                   {t.work.view}
                 </ArrowLink>
               )}
               <button
                 type="button"
-                onClick={() => changeProject(-1)}
+                onClick={() => cycle.shift(-1)}
                 aria-label={t.work.previous}
                 className="circle-control"
               >
@@ -293,7 +348,7 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
               </button>
               <button
                 type="button"
-                onClick={() => changeProject(1)}
+                onClick={() => cycle.shift(1)}
                 aria-label={t.work.next}
                 className="circle-control"
               >
@@ -303,14 +358,13 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
           </div>
         </div>
 
-        <div className="project-rail mt-6" role="tablist" aria-label={t.work.eyebrow}>
+        <div className="project-rail mt-6" aria-label={t.work.eyebrow}>
           {projects.map((item, index) => (
             <button
               key={item.id}
               type="button"
-              role="tab"
-              aria-selected={activeIndex === index}
-              onClick={() => setActiveIndex(index)}
+              aria-pressed={activeIndex === index}
+              onClick={() => cycle.select(index)}
               className={`project-thumb ${activeIndex === index ? "is-active" : ""}`}
             >
               <span className="project-thumb-image">
@@ -327,17 +381,20 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
 
 export function Timeline({ t }: { t: Copy }) {
   const [active, setActive] = useState(0);
-  const step = t.timeline.steps[active];
+  const step = t.timeline.steps[active]!;
 
   return (
     <section
       id="profile"
-      className="trajectory-chapter bg-[#e8ecf2] py-24 text-[#10141a] sm:py-32 lg:py-40"
+      className="trajectory-chapter bg-[#e8ecf2] py-24 text-[#10141a] sm:py-32 lg:py-36"
     >
       <Container>
         <Eyebrow>{t.timeline.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:items-end">
-          <h2 className="display max-w-4xl text-5xl leading-[0.88] sm:text-6xl lg:col-span-8 lg:text-7xl">
+          <h2
+            data-motion-title
+            className="display max-w-4xl text-5xl leading-[0.9] sm:text-6xl lg:col-span-8 lg:text-[4.35rem]"
+          >
             {t.timeline.title}
           </h2>
           <p className="text-base leading-relaxed text-[#4b5563] lg:col-span-4">
@@ -347,6 +404,9 @@ export function Timeline({ t }: { t: Copy }) {
 
         <ScrollDrift className="mt-16" speed={0.035}>
           <div className="trajectory-board grid gap-8 p-5 sm:p-8 lg:grid-cols-12 lg:p-10">
+            <span className="trajectory-progress-line" aria-hidden="true">
+              <span style={{ transform: `scaleY(${(active + 1) / t.timeline.steps.length})` }} />
+            </span>
             <div className="lg:col-span-5">
               <p className="meta text-[#5c7391]">
                 0{active + 1} / 0{t.timeline.steps.length}
@@ -383,14 +443,17 @@ export function Timeline({ t }: { t: Copy }) {
 
 export function Story({ t }: { t: Copy }) {
   const [active, setActive] = useState(0);
-  const step = t.story.process[active];
+  const step = t.story.process[active]!;
 
   return (
-    <section className="bg-background py-24 sm:py-32 lg:py-40">
+    <section className="story-chapter bg-background py-24 sm:py-32 lg:py-36">
       <Container>
         <Eyebrow>{t.story.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-10 lg:grid-cols-12">
-          <h2 className="display max-w-4xl text-5xl leading-[0.88] text-foreground sm:text-6xl lg:col-span-8 lg:text-7xl">
+          <h2
+            data-motion-title
+            className="display max-w-4xl text-5xl leading-[0.9] text-foreground sm:text-6xl lg:col-span-8 lg:text-[4.35rem]"
+          >
             {t.story.title}
           </h2>
           <p className="self-end text-base leading-relaxed text-muted-foreground lg:col-span-4">
@@ -398,7 +461,7 @@ export function Story({ t }: { t: Copy }) {
           </p>
         </div>
 
-        <div className="method-stage mt-16 grid overflow-hidden lg:grid-cols-12">
+        <div data-motion-screen className="method-stage mt-16 grid overflow-hidden lg:grid-cols-12">
           <div className="p-7 sm:p-10 lg:col-span-5 lg:p-12">
             <p className="font-editorial text-5xl text-primary sm:text-6xl">{step.n}</p>
             <Reveal key={step.n} className="mt-12">
@@ -413,7 +476,7 @@ export function Story({ t }: { t: Copy }) {
               <span style={{ transform: `scaleX(${(active + 1) / t.story.process.length})` }} />
             </div>
           </div>
-          <div className="grid bg-white/[0.035] sm:grid-cols-2 lg:col-span-7">
+          <div className="method-choices bg-white/[0.035] lg:col-span-7">
             {t.story.process.map((item, index) => (
               <button
                 key={item.n}
@@ -445,11 +508,18 @@ export function Services({ t }: { t: Copy }) {
   const [open, setOpen] = useState(0);
 
   return (
-    <section className="services-chapter bg-[#0d1219] py-24 sm:py-32 lg:py-40">
-      <Container>
+    <section
+      className="services-chapter bg-[#0d1219] py-24 sm:py-32 lg:py-36"
+      onPointerMove={setSpotlight}
+    >
+      <span className="services-signal" aria-hidden="true" />
+      <Container className="relative">
         <Eyebrow>{t.services.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:items-end">
-          <h2 className="display max-w-4xl text-5xl leading-[0.88] text-foreground sm:text-6xl lg:col-span-9 lg:text-7xl">
+          <h2
+            data-motion-title
+            className="display max-w-4xl text-5xl leading-[0.9] text-foreground sm:text-6xl lg:col-span-9 lg:text-[4.35rem]"
+          >
             {t.services.title}
           </h2>
         </div>
@@ -459,9 +529,11 @@ export function Services({ t }: { t: Copy }) {
             return (
               <div key={group.t} className={isOpen ? "is-open" : ""}>
                 <button
+                  id={`service-trigger-${index}`}
                   type="button"
                   onClick={() => setOpen(index)}
                   aria-expanded={isOpen}
+                  aria-controls={`service-panel-${index}`}
                   className="service-trigger"
                 >
                   <span className="font-editorial text-primary">0{index + 1}</span>
@@ -472,7 +544,13 @@ export function Services({ t }: { t: Copy }) {
                     <Plus aria-hidden="true" size={22} strokeWidth={1.5} />
                   )}
                 </button>
-                <div className="service-panel" aria-hidden={!isOpen}>
+                <div
+                  id={`service-panel-${index}`}
+                  className="service-panel"
+                  role="region"
+                  aria-labelledby={`service-trigger-${index}`}
+                  aria-hidden={!isOpen}
+                >
                   <ul>
                     {group.items.map((item) => (
                       <li key={item}>{item}</li>
@@ -483,6 +561,9 @@ export function Services({ t }: { t: Copy }) {
             );
           })}
         </div>
+        <ArrowLink href="#contact" icon="right" className="service-cta mt-10">
+          {t.services.cta}
+        </ArrowLink>
       </Container>
     </section>
   );
@@ -493,22 +574,25 @@ export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
     { k: t.contact.email, v: links.email, href: links.emailHref, external: false },
     { k: t.contact.whatsapp, v: links.whatsappNumber, href: links.whatsapp(lang), external: true },
     { k: t.contact.linkedin, v: "Antony Rodrigues", href: links.linkedin, external: true },
-    { k: t.contact.github, v: "antonyrodrigues-dev", href: links.github, external: true },
+    { k: t.contact.github, v: links.githubHandle, href: links.github, external: true },
     { k: t.contact.instagram, v: links.instagramHandle, href: links.instagram, external: true },
     { k: t.contact.aurhea, v: "aurheatec", href: links.aurhea, external: true },
   ];
 
   return (
-    <section id="contact" className="contact-chapter bg-background py-24 sm:py-32 lg:py-40">
+    <section id="contact" className="contact-chapter bg-background py-24 sm:py-32 lg:py-36">
       <Container>
         <Eyebrow>{t.contact.eyebrow}</Eyebrow>
-        <h2 className="mt-10 max-w-6xl text-[12vw] leading-[0.82] sm:text-7xl lg:text-[6.4rem]">
+        <h2
+          data-motion-title
+          className="mt-10 max-w-6xl text-[11vw] leading-[0.84] sm:text-7xl lg:text-[5.7rem]"
+        >
           <span className="display block text-foreground">{t.contact.title1}</span>
           <span className="display block text-foreground">{t.contact.title2}</span>
           <span className="editorial mt-5 block text-primary">{t.contact.accent}</span>
         </h2>
 
-        <div className="mt-16 grid gap-4 lg:grid-cols-2">
+        <div data-motion-screen className="mt-16 grid gap-4 lg:grid-cols-2">
           <a
             href={links.emailHref}
             onPointerMove={setSpotlight}
@@ -536,6 +620,7 @@ export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
             </p>
             <span className="contact-card-action">
               {t.contact.whatsapp}
+              <span className="sr-only"> — {t.nav.newTab}</span>
               <ArrowUpRight aria-hidden="true" size={18} strokeWidth={1.5} />
             </span>
           </a>
@@ -555,6 +640,7 @@ export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
                   <span className="meta text-foreground">{channel.k}</span>
                   <span className="mt-3 flex items-center justify-between gap-3 text-sm text-muted-foreground">
                     {channel.v}
+                    {channel.external ? <span className="sr-only"> — {t.nav.newTab}</span> : null}
                     <ArrowUpRight aria-hidden="true" size={16} strokeWidth={1.5} />
                   </span>
                 </a>
@@ -569,22 +655,18 @@ export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
 
 export function Footer({ t }: { t: Copy }) {
   return (
-    <footer className="bg-[#08090c] py-12 text-white sm:py-16">
+    <footer className="portfolio-footer bg-[#08090c] py-12 text-white sm:py-16">
       <Container className="flex flex-col gap-10 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="display text-4xl">
-            ANTONY <span className="font-editorial text-primary normal-case">Rodrigues</span>
-          </p>
-          <p className="mt-3 text-sm text-white/55">{t.footer.role}</p>
-          <p className="meta mt-2 text-white/35">{t.footer.place}</p>
-        </div>
-        <div className="sm:text-right">
-          <p className="meta text-white/35">© 2026 · {t.footer.rights}</p>
-          <a href="#top" className="footer-top-link">
-            {t.footer.top}
-            <ArrowRight aria-hidden="true" size={16} strokeWidth={1.5} />
+          <a href="#top" className="footer-signature" aria-label={t.footer.topLabel}>
+            <span className="meta text-white/35">{t.footer.madeBy}</span>
+            <strong className="display mt-3 block text-4xl font-bold">
+              ANTONY <span className="font-editorial text-primary normal-case">Rodrigues</span>
+            </strong>
           </a>
+          <p className="mt-3 text-sm text-white/55">{t.footer.role}</p>
         </div>
+        <p className="meta text-white/35 sm:text-right">{t.footer.place}</p>
       </Container>
     </footer>
   );

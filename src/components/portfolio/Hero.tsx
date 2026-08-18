@@ -19,33 +19,33 @@ export function Hero({ t }: { t: Copy }) {
 
       entrance
         .fromTo(
-          ".hero-field-shell",
-          { autoAlpha: 0, scale: 1.04 },
-          { autoAlpha: 1, scale: 1, duration: 1.2, ease: "expo.out" },
+          ".hero-field",
+          { autoAlpha: 0, scale: 1.035 },
+          { autoAlpha: 1, scale: 1, duration: 1.35, ease: "expo.out" },
         )
         .fromTo(
           ".hero-name-first",
-          { autoAlpha: 0, yPercent: 44 },
-          { autoAlpha: 1, yPercent: 0, duration: 1.05 },
-          "-=0.66",
-        )
-        .fromTo(
-          ".hero-name-last",
-          { autoAlpha: 0, xPercent: -9, yPercent: 22 },
-          { autoAlpha: 1, xPercent: 0, yPercent: 0, duration: 1.08, ease: "expo.out" },
+          { autoAlpha: 0, yPercent: 48 },
+          { autoAlpha: 1, yPercent: 0, duration: 1.08 },
           "-=0.78",
         )
         .fromTo(
-          ".hero-copy",
-          { autoAlpha: 0, y: 24 },
-          { autoAlpha: 1, y: 0, duration: 0.82 },
-          "-=0.45",
+          ".hero-name-last",
+          { autoAlpha: 0, xPercent: -7, yPercent: 30 },
+          { autoAlpha: 1, xPercent: 0, yPercent: 0, duration: 1.12, ease: "expo.out" },
+          "-=0.84",
+        )
+        .fromTo(
+          ".hero-bottom > *",
+          { autoAlpha: 0, y: 22 },
+          { autoAlpha: 1, y: 0, duration: 0.82, stagger: 0.09 },
+          "-=0.48",
         )
         .fromTo(
           ".hero-scroll-cue",
-          { autoAlpha: 0, y: 8 },
-          { autoAlpha: 0.7, y: 0, duration: 0.6 },
-          "-=0.22",
+          { autoAlpha: 0, y: 10 },
+          { autoAlpha: 0.72, y: 0, duration: 0.72 },
+          "-=0.32",
         );
 
       media.add("(min-width: 768px)", () => {
@@ -54,26 +54,25 @@ export function Hero({ t }: { t: Copy }) {
             trigger: root,
             start: "top top",
             end: "bottom bottom",
-            scrub: 0.8,
+            scrub: 0.85,
             invalidateOnRefresh: true,
           },
         });
 
         timeline
           .to(
-            ".hero-field-shell",
-            {
-              clipPath: "inset(0% 0% 0% 0% round 0px)",
-              scale: 1.075,
-              ease: "none",
-            },
+            ".hero-field",
+            { scale: 1.12, xPercent: -1.5, transformOrigin: "66% 52%", ease: "none" },
             0,
           )
-          .to(".hero-name-first", { xPercent: -8, yPercent: -22, autoAlpha: 0.16, ease: "none" }, 0)
-          .to(".hero-name-last", { xPercent: 14, yPercent: 18, autoAlpha: 0, ease: "none" }, 0)
-          .to(".hero-copy", { yPercent: -28, autoAlpha: 0, ease: "none" }, 0.08)
-          .to(".hero-scroll-cue", { autoAlpha: 0, ease: "none" }, 0.05)
-          .to(".hero-field-fade", { autoAlpha: 0.1, ease: "none" }, 0.2);
+          .to(
+            ".hero-name-lockup",
+            { scale: 0.76, xPercent: -5, yPercent: -22, autoAlpha: 0.14, ease: "none" },
+            0,
+          )
+          .to(".hero-bottom", { yPercent: -34, autoAlpha: 0, ease: "none" }, 0.08)
+          .to(".hero-scroll-cue", { autoAlpha: 0, y: -14, ease: "none" }, 0.04)
+          .to(".hero-exit-shade", { autoAlpha: 0.82, ease: "none" }, 0.34);
       });
 
       return () => media.revert();
@@ -87,21 +86,21 @@ export function Hero({ t }: { t: Copy }) {
       <div className="hero-sticky">
         <div className="hero-field-shell">
           <HeroField />
-          <span className="hero-field-fade" aria-hidden="true" />
+          <span className="hero-exit-shade" aria-hidden="true" />
         </div>
 
         <Container className="hero-content">
           <div className="hero-grid">
             <div className="hero-heading">
-              <h1 aria-label="Antony Rodrigues">
+              <h1 className="hero-name-lockup" aria-label="Antony Rodrigues">
                 <span className="hero-name hero-name-first block">ANTONY</span>
                 <span className="hero-name hero-name-last block">Rodrigues</span>
               </h1>
             </div>
 
-            <div className="hero-copy">
+            <div className="hero-bottom">
               <p className="hero-statement">{t.hero.headline}</p>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="hero-cta-row">
                 <ArrowLink
                   href="#work"
                   variant="bare"
@@ -114,11 +113,11 @@ export function Hero({ t }: { t: Copy }) {
                   {t.hero.ctaContact}
                 </ArrowLink>
               </div>
-              <p className="meta mt-5 text-white/44">{t.hero.availability}</p>
+              <p className="meta hero-availability">{t.hero.availability}</p>
             </div>
 
             <div aria-hidden="true" className="hero-scroll-cue">
-              <span>SCROLL</span>
+              <span>{t.hero.scroll}</span>
               <i />
             </div>
           </div>

@@ -14,14 +14,14 @@ export const copy = {
       closeMenu: "Fechar menu de navegação",
       skip: "Ir para o conteúdo",
       langLabel: "Alternar idioma para inglês",
+      newTab: "abre em uma nova aba",
     },
     hero: {
-      eyebrow: "PORTFÓLIO DE PRODUTO & EXPERIÊNCIA DIGITAL",
-      portraitAlt: "Retrato de Antony Rodrigues",
       headline: "Construo experiências digitais para negócios que precisam funcionar de verdade.",
       ctaWork: "VER PROJETOS",
       ctaContact: "CONVERSAR",
       availability: "Disponível para projetos e oportunidades selecionadas.",
+      scroll: "DESCER",
     },
     manifesto: {
       eyebrow: "PONTO DE VISTA",
@@ -66,6 +66,7 @@ export const copy = {
         "Mais do que uma vitrine para o restaurante, o projeto foi estruturado para organizar a jornada de pedido e sustentar a rotina de quem atende.",
       caseTitle: "Porco Morto",
       caseSub: "Restaurante · Caxias do Sul",
+      previewAlt: "Prévia do projeto Porco Morto",
       flow: ["Cliente", "Pedido", "Regras de negócio", "Cozinha & atendimento"],
       pillars: [
         {
@@ -93,6 +94,7 @@ export const copy = {
       categories: "Tecnologias e disciplinas",
       previous: "Projeto anterior",
       next: "Próximo projeto",
+      previewAlt: "Prévia do projeto",
     },
     timeline: {
       eyebrow: "TRAJETÓRIA",
@@ -151,6 +153,7 @@ export const copy = {
     services: {
       eyebrow: "ONDE POSSO SOMAR",
       title: "Capacidades que se conectam para tirar uma ideia do lugar.",
+      cta: "TENHO UM PROJETO ASSIM",
       groups: [
         {
           t: "Produto digital",
@@ -212,8 +215,8 @@ export const copy = {
     footer: {
       role: "Produto · Design · Desenvolvimento",
       place: "Caxias do Sul · RS · Brasil",
-      rights: "Todos os direitos reservados.",
-      top: "VOLTAR AO TOPO",
+      madeBy: "Feito por",
+      topLabel: "Voltar ao início",
     },
   },
   en: {
@@ -229,14 +232,14 @@ export const copy = {
       closeMenu: "Close navigation menu",
       skip: "Skip to content",
       langLabel: "Switch language to Portuguese",
+      newTab: "opens in a new tab",
     },
     hero: {
-      eyebrow: "PRODUCT & DIGITAL EXPERIENCE PORTFOLIO",
-      portraitAlt: "Portrait of Antony Rodrigues",
       headline: "I build digital experiences for businesses that need to work in the real world.",
       ctaWork: "VIEW PROJECTS",
       ctaContact: "LET'S TALK",
       availability: "Available for selected projects and opportunities.",
+      scroll: "SCROLL",
     },
     manifesto: {
       eyebrow: "POINT OF VIEW",
@@ -281,6 +284,7 @@ export const copy = {
         "More than a storefront for the restaurant, the project was structured to organize the ordering journey and support the people who serve it every day.",
       caseTitle: "Porco Morto",
       caseSub: "Restaurant · Caxias do Sul",
+      previewAlt: "Porco Morto project preview",
       flow: ["Customer", "Order", "Business rules", "Kitchen & service"],
       pillars: [
         {
@@ -308,6 +312,7 @@ export const copy = {
       categories: "Technologies and disciplines",
       previous: "Previous project",
       next: "Next project",
+      previewAlt: "Project preview",
     },
     timeline: {
       eyebrow: "TRAJECTORY",
@@ -366,6 +371,7 @@ export const copy = {
     services: {
       eyebrow: "WHERE I CAN HELP",
       title: "Capabilities that connect to move an idea forward.",
+      cta: "I HAVE A PROJECT LIKE THIS",
       groups: [
         {
           t: "Digital product",
@@ -427,10 +433,10 @@ export const copy = {
     footer: {
       role: "Product · Design · Development",
       place: "Caxias do Sul · RS · Brazil",
-      rights: "All rights reserved.",
-      top: "BACK TO TOP",
+      madeBy: "Designed & built by",
+      topLabel: "Back to the beginning",
     },
   },
 } as const;
 
-export type Copy = (typeof copy)["pt"];
+export type Copy = (typeof copy)[Lang];
