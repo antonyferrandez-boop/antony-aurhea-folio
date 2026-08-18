@@ -1,4 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Hero } from "@/components/portfolio/Hero";
+import { Nav } from "@/components/portfolio/Nav";
+import {
+  Contact,
+  Footer,
+  Manifesto,
+  Marquee,
+  Proof,
+  Services,
+  Story,
+  Systems,
+  Timeline,
+  Work,
+} from "@/components/portfolio/Sections";
+import { copy, type Lang } from "@/content/copy";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -7,36 +23,76 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Portfólio de Antony Rodrigues, Founder & Developer da AURHEA: produtos digitais, engenharia e design com estética editorial e tecnológica.",
+          "Portfólio de Antony Rodrigues, Founder & Developer da AURHEA. Produtos digitais, sistemas e automações para operações do mundo real.",
       },
+      { name: "robots", content: "index, follow" },
       { property: "og:title", content: "Antony Rodrigues — Founder & Developer da AURHEA" },
       {
         property: "og:description",
-        content: "Produtos digitais, engenharia e design por Antony Rodrigues (AURHEA).",
+        content: "Produtos digitais, sistemas e automações pensados a partir de operações reais.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
 });
 
 function Index() {
+  const [lang, setLang] = useState<Lang>("pt");
+  const t = copy[lang];
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        name: "Antony Rodrigues",
+        jobTitle: "Founder & Developer",
+        worksFor: { "@type": "Organization", name: "AURHEA" },
+        url: "https://www.aurheatec.com.br/",
+        sameAs: [
+          "https://www.linkedin.com/in/antony-rodrigues-688416284/",
+          "https://github.com/antonyrodrigues-dev",
+        ],
+      },
+      {
+        "@type": "ProfessionalService",
+        name: "AURHEA",
+        description:
+          "Desenvolvimento de produtos digitais, sistemas, automações e soluções para operações reais.",
+        areaServed: "Brasil",
+        url: "https://www.aurheatec.com.br/",
+      },
+    ],
+  };
+
   return (
-    <main className="relative flex min-h-screen items-center overflow-hidden bg-background">
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-      <div className="relative mx-auto w-full max-w-5xl px-6 py-24">
-        <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">AURHEA</p>
-        <h1 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight text-foreground sm:text-7xl">
-          Antony Rodrigues
-        </h1>
-        <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-          Founder &amp; Developer. Construindo produtos digitais com engenharia precisa e
-          direção visual editorial.
-        </p>
-        <div className="mt-10 h-px w-24 bg-primary" />
-        <p className="mt-10 text-sm text-muted-foreground">
-          Portfólio em construção — aguardando materiais e requisitos completos.
-        </p>
-      </div>
-    </main>
+    <>
+      <a href="#main-content" className="skip-link">
+        {t.nav.skip}
+      </a>
+      <Nav
+        t={t}
+        lang={lang}
+        onToggleLang={() => setLang((current) => (current === "pt" ? "en" : "pt"))}
+      />
+      <main id="main-content" className="relative overflow-hidden bg-background">
+        <Hero t={t} />
+        <Marquee t={t} />
+        <Manifesto t={t} />
+        <Proof t={t} />
+        <Systems t={t} />
+        <Work t={t} lang={lang} />
+        <Timeline t={t} />
+        <Story t={t} />
+        <Services t={t} />
+        <Contact t={t} lang={lang} />
+      </main>
+      <Footer t={t} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+    </>
   );
 }

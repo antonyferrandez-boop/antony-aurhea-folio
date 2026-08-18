@@ -7,13 +7,13 @@ import { Reveal } from "./Reveal";
 export function Marquee({ t }: { t: Copy }) {
   const items = [...t.marquee, ...t.marquee, ...t.marquee, ...t.marquee];
   return (
-    <div
-      aria-hidden="true"
-      className="overflow-hidden border-y border-border bg-surface/60 py-4"
-    >
+    <div aria-hidden="true" className="overflow-hidden border-y border-border bg-surface/60 py-4">
       <div className="marquee-track flex w-max items-center gap-10 whitespace-nowrap">
         {items.map((item, i) => (
-          <span key={`${item}-${i}`} className="meta flex items-center gap-10 text-muted-foreground">
+          <span
+            key={`${item}-${i}`}
+            className="meta flex items-center gap-10 text-muted-foreground"
+          >
             {item}
             <span className="text-primary">/</span>
           </span>
@@ -130,15 +130,15 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
                 delay={(i % 3) * 60}
                 className={wide ? "lg:col-span-7" : "lg:col-span-5"}
               >
-                <article className="group flex h-full flex-col border border-border bg-surface/40 transition-colors duration-200 hover:border-border-hover">
-                  <div className="relative aspect-[16/10] overflow-hidden border-b border-border bg-background">
+                <article className="group flex h-full flex-col border border-border bg-surface/40 transition-colors duration-300 hover:border-border-hover">
+                  <div className="relative aspect-[16/10] overflow-hidden border-b border-border bg-[#0b0f17] p-3 sm:p-4">
                     {p.image ? (
                       <img
                         src={p.image}
                         alt={`${p.title} — preview`}
                         loading="lazy"
                         decoding="async"
-                        className="size-full object-cover object-top opacity-85 transition duration-500 group-hover:scale-[1.02] group-hover:opacity-100"
+                        className="size-full border border-white/8 object-contain object-center opacity-90 shadow-2xl transition duration-700 ease-out group-hover:scale-[1.015] group-hover:opacity-100"
                       />
                     ) : (
                       <div className="flex size-full items-center justify-center">
@@ -328,7 +328,10 @@ export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
                 <span className="meta text-foreground">{c.k}</span>
                 <span className="flex items-center gap-3 text-sm text-muted-foreground transition-colors group-hover:text-primary">
                   {c.v}
-                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
+                  <span
+                    aria-hidden="true"
+                    className="transition-transform group-hover:translate-x-1"
+                  >
                     ↗
                   </span>
                 </span>

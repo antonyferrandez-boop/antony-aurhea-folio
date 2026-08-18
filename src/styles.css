@@ -72,7 +72,6 @@
 }
 
 :root {
-  --radius: 0.625rem;
   --radius: 0.125rem;
   --background: oklch(0.145 0.014 250);
   --foreground: oklch(0.965 0.003 240);
@@ -161,6 +160,7 @@
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    min-width: 320px;
   }
 
   html {
@@ -176,6 +176,26 @@
   ::selection {
     background: var(--primary);
     color: var(--primary-foreground);
+  }
+
+  .skip-link {
+    position: fixed;
+    z-index: 100;
+    top: 0.75rem;
+    left: 0.75rem;
+    transform: translateY(-180%);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: transform 160ms ease;
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
   }
 }
 
@@ -225,13 +245,8 @@
 }
 
 @utility portrait-mask {
-  mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      black 12%,
-      black 82%,
-      transparent 100%
-    ),
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, black 12%, black 82%, transparent 100%),
     linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
   mask-composite: intersect;
   -webkit-mask-composite: source-in;
