@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Hero } from "@/components/portfolio/Hero";
+import { ChapterTransition } from "@/components/portfolio/ChapterTransition";
 import { Nav } from "@/components/portfolio/Nav";
 import {
   Contact,
@@ -77,6 +78,7 @@ function Index() {
       />
       <main id="main-content" className="relative bg-background">
         <Hero t={t} />
+        <ChapterTransition />
         <Manifesto t={t} />
         <Proof t={t} />
         <Systems t={t} />

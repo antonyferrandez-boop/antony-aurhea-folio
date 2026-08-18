@@ -23,35 +23,44 @@ export function Manifesto({ t }: { t: Copy }) {
   return (
     <section
       id="manifesto"
-      className="relative overflow-hidden bg-[#11151c] py-24 sm:py-32 lg:py-40"
+      className="manifesto-chapter relative overflow-hidden py-24 sm:py-32 lg:py-40"
     >
       <div aria-hidden="true" className="manifesto-shape" />
       <Container className="relative">
         <Eyebrow>{t.manifesto.eyebrow}</Eyebrow>
         <div className="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-8">
           <Reveal className="lg:col-span-8">
-            <h2 className="display max-w-5xl text-[12vw] leading-[0.86] text-foreground sm:text-7xl lg:text-[6.25rem]">
+            <h2 className="display max-w-5xl text-[12vw] leading-[0.86] text-[#10141a] sm:text-7xl lg:text-[6.25rem]">
               {t.manifesto.title}
             </h2>
           </Reveal>
           <Reveal delay={90} className="self-end lg:col-span-4 lg:pb-2">
-            <p className="editorial text-3xl leading-[1.04] text-primary sm:text-4xl">
+            <p className="editorial text-3xl leading-[1.04] text-[#247f9d] sm:text-4xl">
               {t.manifesto.accent}
             </p>
           </Reveal>
         </div>
         <Reveal delay={130} className="mt-14 grid gap-10 lg:mt-24 lg:grid-cols-12">
-          <p className="max-w-2xl text-lg leading-relaxed text-white/66 sm:text-xl lg:col-span-6">
+          <p className="max-w-2xl text-lg leading-relaxed text-[#485462] sm:text-xl lg:col-span-5">
             {t.manifesto.body}
           </p>
-          <ul className="grid gap-3 sm:grid-cols-3 lg:col-span-6 lg:self-end">
-            {t.manifesto.notes.map((note, index) => (
-              <li key={note} className="manifesto-note">
-                <span className="font-editorial text-primary">0{index + 1}</span>
-                <span>{note}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="manifesto-loop-shell lg:col-span-7 lg:self-end">
+            <ul className="manifesto-loop-track">
+              {[0, 1].flatMap((copyIndex) =>
+                t.manifesto.notes.map((note, index) => (
+                  <li
+                    key={`${copyIndex}-${note}`}
+                    className="manifesto-note"
+                    data-copy={copyIndex === 1}
+                    aria-hidden={copyIndex === 1}
+                  >
+                    <span className="font-editorial">0{index + 1}</span>
+                    <span>{note}</span>
+                  </li>
+                )),
+              )}
+            </ul>
+          </div>
         </Reveal>
       </Container>
     </section>
@@ -400,6 +409,9 @@ export function Story({ t }: { t: Copy }) {
                 {step.d}
               </p>
             </Reveal>
+            <div className="method-progress" aria-hidden="true">
+              <span style={{ transform: `scaleX(${(active + 1) / t.story.process.length})` }} />
+            </div>
           </div>
           <div className="grid bg-white/[0.035] sm:grid-cols-2 lg:col-span-7">
             {t.story.process.map((item, index) => (

@@ -4,6 +4,8 @@ import { Container } from "./primitives";
 
 export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLang: () => void }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const items = [
@@ -12,6 +14,13 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
     { id: "profile", label: t.nav.profile },
     { id: "contact", label: t.nav.contact },
   ];
+
+  useEffect(() => {
+    const update = () => setScrolled(window.scrollY > 18);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -45,7 +54,11 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-[#08090c]/90">
+    <header
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled || hovered || open ? "is-active" : ""}`}
+    >
       <Container className="flex h-16 items-center justify-end sm:h-20">
         <nav
           aria-label={lang === "pt" ? "Navegação principal" : "Main navigation"}
