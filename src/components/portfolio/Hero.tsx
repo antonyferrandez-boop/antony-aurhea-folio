@@ -40,12 +40,6 @@ export function Hero({ t }: { t: Copy }) {
           { autoAlpha: 0, y: 22 },
           { autoAlpha: 1, y: 0, duration: 0.82, stagger: 0.09 },
           "-=0.48",
-        )
-        .fromTo(
-          ".hero-scroll-cue",
-          { autoAlpha: 0, y: 10 },
-          { autoAlpha: 0.72, y: 0, duration: 0.72 },
-          "-=0.32",
         );
 
       media.add("(min-width: 768px)", () => {
@@ -62,17 +56,19 @@ export function Hero({ t }: { t: Copy }) {
         timeline
           .to(
             ".hero-field",
-            { scale: 1.12, xPercent: -1.5, transformOrigin: "66% 52%", ease: "none" },
+            { scale: 1.1, xPercent: -1.8, transformOrigin: "66% 52%", ease: "none" },
             0,
           )
+          .to(".hero-aurora-one", { xPercent: -16, yPercent: 10, scale: 1.18, ease: "none" }, 0)
+          .to(".hero-aurora-two", { xPercent: 12, yPercent: -14, scale: 0.9, ease: "none" }, 0)
           .to(
             ".hero-name-lockup",
-            { scale: 0.76, xPercent: -5, yPercent: -22, autoAlpha: 0.14, ease: "none" },
+            { scale: 0.84, xPercent: -3.5, yPercent: -8, autoAlpha: 0.34, ease: "none" },
             0,
           )
-          .to(".hero-bottom", { yPercent: -34, autoAlpha: 0, ease: "none" }, 0.08)
-          .to(".hero-scroll-cue", { autoAlpha: 0, y: -14, ease: "none" }, 0.04)
-          .to(".hero-exit-shade", { autoAlpha: 0.82, ease: "none" }, 0.34);
+          .to(".hero-bottom", { yPercent: -22, autoAlpha: 0, ease: "none" }, 0.16)
+          .to(".hero-name-lockup", { autoAlpha: 0, ease: "none" }, 0.72)
+          .to(".hero-exit-shade", { autoAlpha: 0.88, ease: "none" }, 0.42);
       });
 
       return () => media.revert();
@@ -113,12 +109,6 @@ export function Hero({ t }: { t: Copy }) {
                   {t.hero.ctaContact}
                 </ArrowLink>
               </div>
-              <p className="meta hero-availability">{t.hero.availability}</p>
-            </div>
-
-            <div aria-hidden="true" className="hero-scroll-cue">
-              <span>{t.hero.scroll}</span>
-              <i />
             </div>
           </div>
         </Container>

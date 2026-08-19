@@ -48,8 +48,8 @@ export function HeroField() {
         const depth = row / Math.max(1, rows - 1);
         const gradient = context.createLinearGradient(0, 0, width, 0);
         gradient.addColorStop(0, "rgba(76, 193, 224, 0)");
-        gradient.addColorStop(compact ? 0.18 : 0.3, `rgba(90, 202, 230, ${0.07 + depth * 0.07})`);
-        gradient.addColorStop(0.72, `rgba(108, 220, 244, ${0.24 + depth * 0.3})`);
+        gradient.addColorStop(compact ? 0.18 : 0.3, `rgba(90, 202, 230, ${0.1 + depth * 0.08})`);
+        gradient.addColorStop(0.72, `rgba(108, 220, 244, ${0.32 + depth * 0.32})`);
         gradient.addColorStop(1, "rgba(55, 173, 205, 0)");
         return gradient;
       });
@@ -79,8 +79,8 @@ export function HeroField() {
       const normalizedX = x / width;
       const depth = row / Math.max(1, rowCount - 1);
       const envelope = Math.sin(Math.min(1, Math.max(0, normalizedX)) * Math.PI);
-      const primary = Math.sin(normalizedX * TAU * 1.18 + time * 0.00032 + row * 0.21);
-      const secondary = Math.sin(normalizedX * TAU * 2.85 - time * 0.00018 + row * 0.47);
+      const primary = Math.sin(normalizedX * TAU * 1.18 + time * 0.00042 + row * 0.21);
+      const secondary = Math.sin(normalizedX * TAU * 2.85 - time * 0.00025 + row * 0.47);
       const amplitude = height * (0.018 + depth * 0.046) * envelope;
       let y = baseY + primary * amplitude + secondary * amplitude * 0.28;
 
@@ -112,7 +112,7 @@ export function HeroField() {
         else context.lineTo(x, y);
       }
       context.strokeStyle = rowGradients[row] ?? "rgba(108, 220, 244, 0.16)";
-      context.lineWidth = 0.65 + depth;
+      context.lineWidth = 0.78 + depth * 1.08;
       context.stroke();
 
       if (row % (compact ? 5 : 4) !== 0) return;
@@ -137,7 +137,7 @@ export function HeroField() {
         const x = (index / points) * width;
         const normalizedX = x / width;
         const envelope = Math.sin(normalizedX * Math.PI);
-        const wave = Math.sin(normalizedX * TAU * 1.3 + time * 0.00029) * height * 0.072 * envelope;
+        const wave = Math.sin(normalizedX * TAU * 1.3 + time * 0.00038) * height * 0.072 * envelope;
         const thickness = height * (0.015 + 0.016 * Math.sin(normalizedX * Math.PI));
         ribbonTop[index]!.x = x;
         ribbonTop[index]!.y = center + wave - thickness;
@@ -147,7 +147,7 @@ export function HeroField() {
 
       const fill = context.createLinearGradient(width * 0.25, 0, width, 0);
       fill.addColorStop(0, "rgba(48, 169, 202, 0)");
-      fill.addColorStop(0.68, "rgba(68, 190, 221, 0.1)");
+      fill.addColorStop(0.68, "rgba(68, 190, 221, 0.15)");
       fill.addColorStop(1, "rgba(48, 169, 202, 0)");
       context.beginPath();
       ribbonTop.forEach((point, index) => {

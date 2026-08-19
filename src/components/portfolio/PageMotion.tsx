@@ -14,16 +14,24 @@ export function PageMotion({ locale }: { locale: string }) {
         gsap.utils.toArray<HTMLElement>("[data-motion-title]").forEach((title) => {
           gsap.fromTo(
             title,
-            { yPercent: 14, scale: 0.93, transformOrigin: "left bottom" },
             {
+              autoAlpha: 0.28,
+              yPercent: 24,
+              scale: 0.86,
+              letterSpacing: "0.025em",
+              transformOrigin: "left bottom",
+            },
+            {
+              autoAlpha: 1,
               yPercent: 0,
               scale: 1,
+              letterSpacing: "-0.045em",
               ease: "none",
               scrollTrigger: {
                 trigger: title,
-                start: "top 92%",
-                end: "top 46%",
-                scrub: 0.55,
+                start: "top 96%",
+                end: "top 48%",
+                scrub: 0.95,
               },
             },
           );
@@ -32,16 +40,18 @@ export function PageMotion({ locale }: { locale: string }) {
         gsap.utils.toArray<HTMLElement>("[data-motion-screen]").forEach((screen) => {
           gsap.fromTo(
             screen,
-            { y: 72, scale: 0.94 },
+            { autoAlpha: 0.36, y: 96, scale: 0.91, clipPath: "inset(7% 4% 0 4%)" },
             {
+              autoAlpha: 1,
               y: 0,
               scale: 1,
+              clipPath: "inset(0% 0% 0% 0%)",
               ease: "none",
               scrollTrigger: {
                 trigger: screen,
-                start: "top 94%",
-                end: "top 54%",
-                scrub: 0.65,
+                start: "top 97%",
+                end: "top 52%",
+                scrub: 1.05,
               },
             },
           );
@@ -76,6 +86,27 @@ export function PageMotion({ locale }: { locale: string }) {
                 start: "top bottom",
                 end: "bottom top",
                 scrub: 0.8,
+              },
+            },
+          );
+        });
+      });
+
+      media.add("(min-width: 1024px)", () => {
+        gsap.utils.toArray<HTMLElement>("[data-section-wipe]").forEach((wipe) => {
+          const chapter = wipe.closest<HTMLElement>("[data-motion-chapter]");
+          if (!chapter) return;
+          gsap.fromTo(
+            wipe,
+            { clipPath: "inset(0% 0% 0% 0%)" },
+            {
+              clipPath: "inset(0% 0% 100% 0%)",
+              ease: "none",
+              scrollTrigger: {
+                trigger: chapter,
+                start: "top 98%",
+                end: "top 58%",
+                scrub: 1.15,
               },
             },
           );

@@ -29,6 +29,7 @@ export const copy = {
       accent: "A tecnologia entra depois — para tornar a operação mais clara, rápida e viável.",
       body: "Minha referência não vem só da tela. Vem de logística, campo, indústria e de observar como uma decisão pequena se propaga pelo negócio inteiro.",
       notes: ["Processos reais", "Leitura de negócio", "Execução com intenção"],
+      kinetic: ["OBSERVAR", "ENTENDER", "ESTRUTURAR", "CONSTRUIR"],
     },
     proof: {
       eyebrow: "BASE DE TRABALHO",
@@ -61,25 +62,25 @@ export const copy = {
     },
     systems: {
       eyebrow: "POR DENTRO DE UM CASE",
-      title: "Porco Morto: uma experiência que começa no pedido e chega à operação.",
+      title: "AURHEA: tecnologia pensada como produto, sistema e operação.",
       intro:
-        "Mais do que uma vitrine para o restaurante, o projeto foi estruturado para organizar a jornada de pedido e sustentar a rotina de quem atende.",
-      caseTitle: "Porco Morto",
-      caseSub: "Restaurante · Caxias do Sul",
-      previewAlt: "Prévia do projeto Porco Morto",
-      flow: ["Cliente", "Pedido", "Regras de negócio", "Cozinha & atendimento"],
+        "Minha empresa nasce para aproximar estratégia, design e engenharia em produtos digitais capazes de evoluir junto com negócios reais.",
+      caseTitle: "AURHEA",
+      caseSub: "Tecnologia · Produto digital",
+      previewAlt: "Prévia do projeto AURHEA",
+      flow: ["Diagnóstico", "Estratégia & design", "Desenvolvimento", "Evolução contínua"],
       pillars: [
         {
-          t: "JORNADA DIRETA",
-          d: "A experiência aproxima cardápio, decisão e atendimento sem adicionar etapas desnecessárias.",
+          t: "VISÃO DE PRODUTO",
+          d: "Cada solução começa pela leitura do negócio, da operação e do resultado que precisa gerar.",
         },
         {
-          t: "OPERAÇÃO CONECTADA",
-          d: "O pedido deixa de ser só uma mensagem e passa a fazer parte de um fluxo organizado.",
+          t: "EXECUÇÃO INTEGRADA",
+          d: "Estratégia, interface e desenvolvimento avançam como uma frente única, sem perder intenção.",
         },
         {
-          t: "BASE PARA CRESCER",
-          d: "A estrutura considera administração, dados e novas rotinas conforme a operação evolui.",
+          t: "BASE PARA EVOLUIR",
+          d: "A estrutura técnica e visual é construída para ganhar novas rotinas sem recomeçar do zero.",
         },
       ],
       visit: "ABRIR O PROJETO",
@@ -153,7 +154,7 @@ export const copy = {
     services: {
       eyebrow: "ONDE POSSO SOMAR",
       title: "Capacidades que se conectam para tirar uma ideia do lugar.",
-      cta: "TENHO UM PROJETO ASSIM",
+      cta: "CONVERSAR SOBRE UM PROJETO",
       groups: [
         {
           t: "Produto digital",
@@ -205,6 +206,7 @@ export const copy = {
       projectText:
         "Se a sua empresa precisa de uma presença digital ou de um processo mais inteligente, a AURHEA pode ser o ponto de partida.",
       channels: "Outros caminhos",
+      channelsIntro: "Escolha o canal que fizer mais sentido para a conversa.",
       email: "E-mail",
       whatsapp: "WhatsApp",
       linkedin: "LinkedIn",
@@ -247,6 +249,7 @@ export const copy = {
       accent: "Technology comes after — to make the operation clearer, faster and viable.",
       body: "My reference does not come only from screens. It comes from logistics, field work, industry and observing how a small decision spreads through an entire business.",
       notes: ["Real processes", "Business reading", "Intentional execution"],
+      kinetic: ["OBSERVE", "UNDERSTAND", "STRUCTURE", "BUILD"],
     },
     proof: {
       eyebrow: "WORKING FOUNDATION",
@@ -279,25 +282,25 @@ export const copy = {
     },
     systems: {
       eyebrow: "INSIDE A CASE",
-      title: "Porco Morto: an experience that begins with an order and reaches the operation.",
+      title: "AURHEA: technology designed as product, system and operation.",
       intro:
-        "More than a storefront for the restaurant, the project was structured to organize the ordering journey and support the people who serve it every day.",
-      caseTitle: "Porco Morto",
-      caseSub: "Restaurant · Caxias do Sul",
-      previewAlt: "Porco Morto project preview",
-      flow: ["Customer", "Order", "Business rules", "Kitchen & service"],
+        "My company brings strategy, design and engineering together in digital products built to evolve alongside real businesses.",
+      caseTitle: "AURHEA",
+      caseSub: "Technology · Digital product",
+      previewAlt: "AURHEA project preview",
+      flow: ["Diagnosis", "Strategy & design", "Development", "Continuous evolution"],
       pillars: [
         {
-          t: "DIRECT JOURNEY",
-          d: "The experience brings menu, decision and service closer without unnecessary steps.",
+          t: "PRODUCT VISION",
+          d: "Every solution starts by reading the business, its operation and the outcome it needs to create.",
         },
         {
-          t: "CONNECTED OPERATION",
-          d: "An order becomes more than a message: it becomes part of an organized flow.",
+          t: "INTEGRATED DELIVERY",
+          d: "Strategy, interface and development move as one practice without losing intention.",
         },
         {
-          t: "ROOM TO GROW",
-          d: "The structure considers administration, data and new routines as the operation evolves.",
+          t: "BUILT TO EVOLVE",
+          d: "The technical and visual foundation can absorb new routines without starting over.",
         },
       ],
       visit: "OPEN PROJECT",
@@ -371,7 +374,7 @@ export const copy = {
     services: {
       eyebrow: "WHERE I CAN HELP",
       title: "Capabilities that connect to move an idea forward.",
-      cta: "I HAVE A PROJECT LIKE THIS",
+      cta: "DISCUSS A PROJECT",
       groups: [
         {
           t: "Digital product",
@@ -423,6 +426,7 @@ export const copy = {
       projectText:
         "If your business needs a digital presence or a smarter process, AURHEA can be the starting point.",
       channels: "Other paths",
+      channelsIntro: "Choose the channel that makes the most sense for the conversation.",
       email: "Email",
       whatsapp: "WhatsApp",
       linkedin: "LinkedIn",

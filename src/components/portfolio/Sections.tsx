@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Minus, Plus } from "lucide-react";
 import type { Copy, Lang } from "@/content/copy";
 import { projects } from "@/content/projects";
@@ -14,6 +14,12 @@ function Eyebrow({ children }: { children: string }) {
   return <p className="section-eyebrow">{children}</p>;
 }
 
+function SectionWipe({ tone = "dark" }: { tone?: "dark" | "light" | "blue" }) {
+  return (
+    <span data-section-wipe className={`section-wipe section-wipe-${tone}`} aria-hidden="true" />
+  );
+}
+
 function setSpotlight(event: PointerEvent<HTMLElement>) {
   const bounds = event.currentTarget.getBoundingClientRect();
   event.currentTarget.style.setProperty("--spotlight-x", `${event.clientX - bounds.left}px`);
@@ -24,9 +30,11 @@ export function Manifesto({ t }: { t: Copy }) {
   return (
     <section
       id="manifesto"
+      data-motion-chapter
       className="manifesto-chapter relative overflow-hidden py-24 sm:py-32 lg:py-40"
       onPointerMove={setSpotlight}
     >
+      <SectionWipe tone="dark" />
       <div aria-hidden="true" className="manifesto-shape" />
       <Container className="relative">
         <Eyebrow>{t.manifesto.eyebrow}</Eyebrow>
@@ -61,6 +69,16 @@ export function Manifesto({ t }: { t: Copy }) {
             </ul>
           </div>
         </Reveal>
+        <div className="manifesto-kinetic" aria-hidden="true">
+          <div className="manifesto-kinetic-track">
+            {[...t.manifesto.kinetic, ...t.manifesto.kinetic].map((word, index) => (
+              <span key={`${word}-${index}`}>
+                {word}
+                <i>↗</i>
+              </span>
+            ))}
+          </div>
+        </div>
       </Container>
     </section>
   );
@@ -74,14 +92,14 @@ export function Proof({ t }: { t: Copy }) {
   return (
     <section
       ref={cycle.rootRef}
-      className="proof-chapter bg-background py-24 sm:py-32 lg:py-36"
-      onMouseEnter={() => cycle.setPaused(true)}
-      onMouseLeave={() => cycle.setPaused(false)}
+      data-motion-chapter
+      className="proof-chapter relative bg-background py-24 sm:py-32 lg:py-36"
       onFocusCapture={() => cycle.setPaused(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) cycle.setPaused(false);
       }}
     >
+      <SectionWipe tone="light" />
       <Container>
         <Eyebrow>{t.proof.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-12 lg:grid-cols-12 lg:items-end">
@@ -173,8 +191,10 @@ export function Systems({ t }: { t: Copy }) {
   return (
     <section
       id="systems"
-      className="case-chapter overflow-hidden bg-[#0b0d11] py-24 sm:py-32 lg:py-40"
+      data-motion-chapter
+      className="case-chapter relative overflow-hidden bg-[#0b0d11] py-24 sm:py-32 lg:py-40"
     >
+      <SectionWipe tone="blue" />
       <Container>
         <Eyebrow>{t.systems.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-10 lg:grid-cols-12">
@@ -194,9 +214,9 @@ export function Systems({ t }: { t: Copy }) {
             <span aria-hidden="true" className="case-signal" />
             <div data-motion-screen className="grid gap-8 lg:grid-cols-12 lg:gap-12">
               <div className="case-cinematic-visual relative lg:col-span-7">
-                <div className="case-preview group relative overflow-hidden rounded-[1.35rem] bg-[#20160e] p-3 sm:p-5">
+                <div className="case-preview group relative overflow-hidden rounded-[1.35rem] bg-[#07131a] p-3 sm:p-5">
                   <img
-                    src="/images/porco-morto-preview.png"
+                    src="/images/projects/aurhea.webp"
                     alt={t.systems.previewAlt}
                     loading="lazy"
                     decoding="async"
@@ -223,7 +243,7 @@ export function Systems({ t }: { t: Copy }) {
                   </span>
                 </div>
                 <ArrowLink
-                  href={links.projects.porcoMorto}
+                  href={links.aurhea}
                   external
                   externalLabel={t.nav.newTab}
                   className="case-cinematic-action mt-10"
@@ -251,24 +271,37 @@ export function Systems({ t }: { t: Copy }) {
 export function Work({ t, lang }: { t: Copy; lang: Lang }) {
   const initialProject = Math.max(
     0,
-    projects.findIndex((project) => project.id === "porco-morto"),
+    projects.findIndex((project) => project.id === "aurhea"),
   );
   const cycle = useAutoCycle({ length: projects.length, initial: initialProject, interval: 7200 });
   const activeIndex = cycle.active;
   const project = projects[activeIndex]!;
+  const railRef = useRef<HTMLDivElement>(null);
+  const thumbRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    const thumb = thumbRefs.current[activeIndex];
+    if (!rail || !thumb) return;
+    const left = thumb.offsetLeft - (rail.clientWidth - thumb.clientWidth) / 2;
+    rail.scrollTo({
+      left: Math.max(0, left),
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+  }, [activeIndex]);
 
   return (
     <section
       ref={cycle.rootRef}
       id="work"
-      className="project-chapter overflow-hidden bg-background py-24 sm:py-32 lg:py-36"
-      onMouseEnter={() => cycle.setPaused(true)}
-      onMouseLeave={() => cycle.setPaused(false)}
+      data-motion-chapter
+      className="project-chapter relative overflow-hidden bg-background py-24 sm:py-32 lg:py-36"
       onFocusCapture={() => cycle.setPaused(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) cycle.setPaused(false);
       }}
     >
+      <SectionWipe tone="dark" />
       <Container>
         <Eyebrow>{t.work.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:items-end">
@@ -327,7 +360,7 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
                 style={{ "--cycle-duration": `${cycle.interval}ms` } as CSSProperties}
               />
             </span>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <div className="project-actions mt-9">
               {project.liveUrl && (
                 <ArrowLink
                   href={project.liveUrl}
@@ -358,9 +391,12 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
           </div>
         </div>
 
-        <div className="project-rail mt-6" aria-label={t.work.eyebrow}>
+        <div ref={railRef} className="project-rail mt-6" aria-label={t.work.eyebrow}>
           {projects.map((item, index) => (
             <button
+              ref={(node) => {
+                thumbRefs.current[index] = node;
+              }}
               key={item.id}
               type="button"
               aria-pressed={activeIndex === index}
@@ -380,14 +416,22 @@ export function Work({ t, lang }: { t: Copy; lang: Lang }) {
 }
 
 export function Timeline({ t }: { t: Copy }) {
-  const [active, setActive] = useState(0);
+  const cycle = useAutoCycle({ length: t.timeline.steps.length, interval: 7600 });
+  const active = cycle.active;
   const step = t.timeline.steps[active]!;
 
   return (
     <section
+      ref={cycle.rootRef}
       id="profile"
-      className="trajectory-chapter bg-[#e8ecf2] py-24 text-[#10141a] sm:py-32 lg:py-36"
+      data-motion-chapter
+      className="trajectory-chapter relative bg-[#e8ecf2] py-24 text-[#10141a] sm:py-32 lg:py-36"
+      onFocusCapture={() => cycle.setPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) cycle.setPaused(false);
+      }}
     >
+      <SectionWipe tone="dark" />
       <Container>
         <Eyebrow>{t.timeline.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:items-end">
@@ -411,7 +455,7 @@ export function Timeline({ t }: { t: Copy }) {
               <p className="meta text-[#5c7391]">
                 0{active + 1} / 0{t.timeline.steps.length}
               </p>
-              <Reveal key={step.k} className="mt-8">
+              <Reveal key={step.k} className="trajectory-detail mt-8">
                 <h3 className="display text-5xl leading-[0.9] sm:text-6xl">{step.k}</h3>
                 <p className="mt-6 max-w-md text-base leading-relaxed text-[#4b5563] sm:text-lg">
                   {step.v}
@@ -423,13 +467,22 @@ export function Timeline({ t }: { t: Copy }) {
                 <li key={item.k}>
                   <button
                     type="button"
-                    onClick={() => setActive(index)}
+                    onClick={() => cycle.select(index)}
                     aria-pressed={active === index}
                     className={active === index ? "is-active" : ""}
                   >
                     <span className="trajectory-dot" aria-hidden="true" />
                     <span className="meta">0{index + 1}</span>
                     <span>{item.k}</span>
+                    {active === index && (
+                      <span className="trajectory-cycle-progress" aria-hidden="true">
+                        <span
+                          key={`${cycle.cycleKey}-${index}-${cycle.running}`}
+                          className={cycle.running ? "is-running" : ""}
+                          style={{ "--cycle-duration": `${cycle.interval}ms` } as CSSProperties}
+                        />
+                      </span>
+                    )}
                   </button>
                 </li>
               ))}
@@ -446,7 +499,11 @@ export function Story({ t }: { t: Copy }) {
   const step = t.story.process[active]!;
 
   return (
-    <section className="story-chapter bg-background py-24 sm:py-32 lg:py-36">
+    <section
+      data-motion-chapter
+      className="story-chapter relative bg-background py-24 sm:py-32 lg:py-36"
+    >
+      <SectionWipe tone="light" />
       <Container>
         <Eyebrow>{t.story.eyebrow}</Eyebrow>
         <div className="mt-10 grid gap-10 lg:grid-cols-12">
@@ -509,9 +566,11 @@ export function Services({ t }: { t: Copy }) {
 
   return (
     <section
+      data-motion-chapter
       className="services-chapter bg-[#0d1219] py-24 sm:py-32 lg:py-36"
       onPointerMove={setSpotlight}
     >
+      <SectionWipe tone="blue" />
       <span className="services-signal" aria-hidden="true" />
       <Container className="relative">
         <Eyebrow>{t.services.eyebrow}</Eyebrow>
@@ -572,7 +631,7 @@ export function Services({ t }: { t: Copy }) {
 export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
   const channels = [
     { k: t.contact.email, v: links.email, href: links.emailHref, external: false },
-    { k: t.contact.whatsapp, v: links.whatsappNumber, href: links.whatsapp(lang), external: true },
+    { k: t.contact.whatsapp, v: links.whatsappNumber, href: links.whatsapp(lang), external: false },
     { k: t.contact.linkedin, v: "Antony Rodrigues", href: links.linkedin, external: true },
     { k: t.contact.github, v: links.githubHandle, href: links.github, external: true },
     { k: t.contact.instagram, v: links.instagramHandle, href: links.instagram, external: true },
@@ -580,7 +639,12 @@ export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
   ];
 
   return (
-    <section id="contact" className="contact-chapter bg-background py-24 sm:py-32 lg:py-36">
+    <section
+      id="contact"
+      data-motion-chapter
+      className="contact-chapter relative bg-background py-24 sm:py-32 lg:py-36"
+    >
+      <SectionWipe tone="dark" />
       <Container>
         <Eyebrow>{t.contact.eyebrow}</Eyebrow>
         <h2
@@ -609,8 +673,6 @@ export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
           </a>
           <a
             href={links.whatsapp(lang)}
-            target="_blank"
-            rel="noopener noreferrer"
             onPointerMove={setSpotlight}
             className="contact-card contact-card-dark"
           >
@@ -620,16 +682,18 @@ export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
             </p>
             <span className="contact-card-action">
               {t.contact.whatsapp}
-              <span className="sr-only"> — {t.nav.newTab}</span>
               <ArrowUpRight aria-hidden="true" size={18} strokeWidth={1.5} />
             </span>
           </a>
         </div>
 
-        <div className="mt-20 grid gap-7 lg:grid-cols-12">
-          <p className="meta text-muted-foreground lg:col-span-3">{t.contact.channels}</p>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:col-span-9 lg:grid-cols-3">
-            {channels.map((channel) => (
+        <div className="contact-channels mt-20">
+          <div className="contact-channels-head">
+            <p className="meta text-primary">{t.contact.channels}</p>
+            <p>{t.contact.channelsIntro}</p>
+          </div>
+          <ul className="channel-list">
+            {channels.map((channel, index) => (
               <li key={channel.k}>
                 <a
                   href={channel.href}
@@ -637,9 +701,12 @@ export function Contact({ t, lang }: { t: Copy; lang: Lang }) {
                   onPointerMove={setSpotlight}
                   className="channel-link"
                 >
-                  <span className="meta text-foreground">{channel.k}</span>
-                  <span className="mt-3 flex items-center justify-between gap-3 text-sm text-muted-foreground">
-                    {channel.v}
+                  <span className="font-editorial channel-index">0{index + 1}</span>
+                  <span className="channel-name">
+                    <strong className="display">{channel.k}</strong>
+                    <small>{channel.v}</small>
+                  </span>
+                  <span className="channel-arrow">
                     {channel.external ? <span className="sr-only"> — {t.nav.newTab}</span> : null}
                     <ArrowUpRight aria-hidden="true" size={16} strokeWidth={1.5} />
                   </span>
@@ -662,6 +729,9 @@ export function Footer({ t }: { t: Copy }) {
             <span className="meta text-white/35">{t.footer.madeBy}</span>
             <strong className="display mt-3 block text-4xl font-bold">
               ANTONY <span className="font-editorial text-primary normal-case">Rodrigues</span>
+              <span className="footer-top-mark" aria-hidden="true">
+                ↑
+              </span>
             </strong>
           </a>
           <p className="mt-3 text-sm text-white/55">{t.footer.role}</p>

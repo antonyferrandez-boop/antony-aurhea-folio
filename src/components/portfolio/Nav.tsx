@@ -5,8 +5,8 @@ import { Container } from "./primitives";
 
 export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLang: () => void }) {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("top");
+  const headerRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const items = [
@@ -17,10 +17,30 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
   ];
 
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 32);
+    const header = headerRef.current;
+    if (!header) return;
+    let frame = 0;
+    let scheduled = false;
+
+    const update = () => {
+      const raw = Math.min(1, Math.max(0, (window.scrollY - 8) / 128));
+      const progress = raw * raw * (3 - 2 * raw);
+      header.style.setProperty("--nav-progress", progress.toFixed(4));
+      scheduled = false;
+    };
+
+    const onScroll = () => {
+      if (scheduled) return;
+      scheduled = true;
+      frame = window.requestAnimationFrame(update);
+    };
+
     update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -72,7 +92,7 @@ export function Nav({ t, lang, onToggleLang }: { t: Copy; lang: Lang; onToggleLa
   }, [open]);
 
   return (
-    <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "is-scrolled" : ""}`}>
+    <header ref={headerRef} className="site-header fixed inset-x-0 top-0 z-50">
       <Container>
         <div className="nav-frame flex h-16 items-center justify-end sm:h-20">
           <nav
